@@ -252,18 +252,18 @@
     padding: 12px 14px;
     border: 1px solid var(--border);
     border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
     margin-top: 6px;
     letter-spacing: 1px;
+    word-break: break-all;
   }
+  .keybox-hint { margin-top: 12px; clear: both; }
   .copy-btn {
+    display: block;
+    margin: 10px 0 0 auto;
     background: transparent;
     color: var(--gold);
     border: 1px solid var(--gold);
-    padding: 5px 12px;
+    padding: 6px 16px;
     border-radius: 3px;
     font-size: 10px;
     font-weight: 700;
@@ -733,12 +733,9 @@
     margin-bottom: 14px;
     line-height: 1.5;
   }
-  .admin-current-pin {
-    color: var(--gold-bright);
-    font-family: "Courier New", Courier, monospace;
-    letter-spacing: 3px;
-    font-size: 16px;
-    margin-left: 6px;
+  .admin-field {
+    text-align: left;
+    margin-bottom: 14px;
   }
   .admin-label {
     display: block;
@@ -746,8 +743,27 @@
     letter-spacing: 2px;
     color: var(--gold);
     text-transform: uppercase;
-    margin: 8px 0 8px;
+    margin: 0 0 6px;
     font-weight: 700;
+  }
+  .admin-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: "Georgia", serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .admin-input:focus { border-color: var(--gold); }
+  .admin-input.error { border-color: var(--danger); animation: shake 0.4s; }
+  .admin-input-mono {
+    font-family: "Courier New", Courier, monospace;
+    color: var(--gold-bright);
+    letter-spacing: 1.5px;
   }
   .admin-note {
     font-size: 11px;
@@ -801,6 +817,12 @@
         <p class="muted" data-i18n="homeCheckinText">Ubytovanie je možné od 15:00. Kľúče nájdete v trezore pri vchode. Prajeme Vám príjemný pobyt.</p>
       </div>
 
+      <div class="card">
+        <h3><span class="tag">🔑</span><span data-i18n="homeKeyboxTitle">KÓD KRABIČKY NA KĽÚČE</span></h3>
+        <div class="wifi-value" id="keyboxCode">1234</div>
+        <p class="muted keybox-hint" data-i18n="homeKeyboxHint">Krabička na kľúče sa nachádza na vstupnej kovovej bránke a je označená jašteričkou 🦎</p>
+      </div>
+
     </section>
 
     <!-- WIFI (protected) -->
@@ -811,18 +833,14 @@
 
       <div class="card">
         <h3><span data-i18n="wifiSsidLabel">NÁZOV SIETE</span></h3>
-        <div class="wifi-value">
-          <span id="wifiSsid">UMestana_Guest</span>
-          <button class="copy-btn" data-copy="wifiSsid" data-i18n="copy">KOPÍROVAŤ</button>
-        </div>
+        <div class="wifi-value" id="wifiSsid">UMestana_Guest</div>
+        <button class="copy-btn" data-copy="wifiSsid" data-i18n="copy">KOPÍROVAŤ</button>
       </div>
 
       <div class="card">
         <h3><span data-i18n="wifiPassLabel">HESLO</span></h3>
-        <div class="wifi-value">
-          <span id="wifiPass">mestan2024</span>
-          <button class="copy-btn" data-copy="wifiPass" data-i18n="copy">KOPÍROVAŤ</button>
-        </div>
+        <div class="wifi-value" id="wifiPass">mestan2024</div>
+        <button class="copy-btn" data-copy="wifiPass" data-i18n="copy">KOPÍROVAŤ</button>
       </div>
 
       <div class="card">
@@ -983,16 +1001,33 @@
     </div>
 
     <div class="admin-step" id="adminStep2" hidden>
-      <p class="admin-desc">
-        <span data-i18n="adminCurrentPin">Aktuálny PIN hostí:</span>
-        <strong id="adminCurrentPinDisplay" class="admin-current-pin">1234</strong>
-      </p>
-      <label class="admin-label" data-i18n="adminNewPinLabel">Nový PIN (4 číslice)</label>
-      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="pin-input" id="adminNewPinInput" autocomplete="off" />
+      <p class="admin-desc" data-i18n="adminEditDesc">Upravte nastavenia apartmánu.</p>
+
+      <div class="admin-field">
+        <label class="admin-label" data-i18n="adminFieldPin">PIN hostí (4 číslice)</label>
+        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="admin-input admin-input-mono" id="adminFieldPinInput" autocomplete="off" />
+      </div>
+
+      <div class="admin-field">
+        <label class="admin-label" data-i18n="adminFieldSsid">WiFi — názov siete</label>
+        <input type="text" class="admin-input" id="adminFieldSsid" autocomplete="off" />
+      </div>
+
+      <div class="admin-field">
+        <label class="admin-label" data-i18n="adminFieldWifiPass">WiFi — heslo</label>
+        <input type="text" class="admin-input" id="adminFieldWifiPass" autocomplete="off" />
+      </div>
+
+      <div class="admin-field">
+        <label class="admin-label" data-i18n="adminFieldKeybox">Kód krabičky na kľúče</label>
+        <input type="text" class="admin-input admin-input-mono" id="adminFieldKeybox" autocomplete="off" />
+      </div>
+
       <div class="error-msg" id="adminChangeError"></div>
       <div class="admin-success" id="adminSuccess"></div>
+
       <button class="lock-submit" id="adminSaveBtn" data-i18n="adminSave">Uložiť</button>
-      <p class="admin-note" data-i18n="adminNote">Poznámka: zmena platí iba v tomto prehliadači. Pre trvalú zmenu pre všetkých hostí upravte DEFAULT_PIN v súbore index.html.</p>
+      <p class="admin-note" data-i18n="adminNote">Poznámka: zmeny platia iba v tomto prehliadači. Pre trvalú zmenu pre všetkých hostí upravte predvolené hodnoty v súbore index.html.</p>
     </div>
   </div>
 </div>
@@ -1000,6 +1035,9 @@
 <script>
 (function () {
   const DEFAULT_PIN = "1234";
+  const DEFAULT_WIFI_SSID = "UMestana_Guest";
+  const DEFAULT_WIFI_PASS = "mestan2024";
+  const DEFAULT_KEYBOX = "1234";
   const ADMIN_PIN = "9999";
   const LONG_PRESS_MS = 1500;
 
@@ -1102,14 +1140,26 @@
     }
   ];
 
-  function getCurrentPin() {
-    try { return localStorage.getItem("guestPin") || DEFAULT_PIN; }
-    catch { return DEFAULT_PIN; }
+  function getStored(key, fallback) {
+    try { return localStorage.getItem(key) || fallback; }
+    catch { return fallback; }
   }
-  function setGuestPin(pin) {
-    try { localStorage.setItem("guestPin", pin); } catch {}
+  function setStored(key, value) {
+    try { localStorage.setItem(key, value); } catch {}
   }
-  const PROTECTED = new Set(["wifi", "rules", "contact"]);
+  function getCurrentPin() { return getStored("guestPin", DEFAULT_PIN); }
+  function getWifiSsid()   { return getStored("wifiSsid", DEFAULT_WIFI_SSID); }
+  function getWifiPass()   { return getStored("wifiPass", DEFAULT_WIFI_PASS); }
+  function getKeybox()     { return getStored("keyboxCode", DEFAULT_KEYBOX); }
+
+  function applyStoredValues() {
+    const ssidEl = document.getElementById("wifiSsid");
+    const passEl = document.getElementById("wifiPass");
+    const kbEl   = document.getElementById("keyboxCode");
+    if (ssidEl) ssidEl.textContent = getWifiSsid();
+    if (passEl) passEl.textContent = getWifiPass();
+    if (kbEl)   kbEl.textContent   = getKeybox();
+  }
 
   const I18N = {
     sk: {
@@ -1120,6 +1170,8 @@
       homeStayText: "V spodnom menu nájdete informácie o WiFi, domovom poriadku, tipy na okolie a kontakt na hostiteľa.",
       homeCheckinTitle: "UBYTOVANIE",
       homeCheckinText: "Ubytovanie je možné od 15:00. Kľúče nájdete v trezore pri vchode. Prajeme Vám príjemný pobyt.",
+      homeKeyboxTitle: "KÓD KRABIČKY NA KĽÚČE",
+      homeKeyboxHint: "Krabička na kľúče sa nachádza na vstupnej kovovej bránke a je označená jašteričkou 🦎",
       wifiTitle: "WiFi pripojenie",
       wifiSub: "Bezdrôtová sieť pre hostí",
       wifiSsidLabel: "NÁZOV SIETE",
@@ -1176,13 +1228,16 @@
       adminTitle: "Správa apartmánu",
       adminAuthDesc: "Zadajte administrátorský kód.",
       adminContinue: "Pokračovať",
-      adminCurrentPin: "Aktuálny PIN hostí:",
-      adminNewPinLabel: "Nový PIN (4 číslice)",
-      adminSave: "Uložiť nový PIN",
-      adminNote: "Poznámka: zmena platí iba v tomto prehliadači. Pre trvalú zmenu pre všetkých hostí upravte DEFAULT_PIN v súbore index.html.",
+      adminEditDesc: "Upravte nastavenia apartmánu.",
+      adminFieldPin: "PIN hostí (4 číslice)",
+      adminFieldSsid: "WiFi — názov siete",
+      adminFieldWifiPass: "WiFi — heslo",
+      adminFieldKeybox: "Kód krabičky na kľúče",
+      adminSave: "Uložiť nastavenia",
+      adminNote: "Poznámka: zmeny platia iba v tomto prehliadači. Pre trvalú zmenu pre všetkých hostí upravte predvolené hodnoty v súbore index.html.",
       adminErrorAuth: "Nesprávny administrátorský kód.",
       adminErrorPin: "PIN musí obsahovať presne 4 číslice.",
-      adminSaved: "PIN bol úspešne zmenený ✓"
+      adminSaved: "Nastavenia boli úspešne uložené ✓"
     },
     en: {
       welcomeTo: "Welcome",
@@ -1192,6 +1247,8 @@
       homeStayText: "Use the menu below to find WiFi, house rules, local recommendations, and host contact details.",
       homeCheckinTitle: "CHECK-IN",
       homeCheckinText: "Check-in is from 3:00 PM. The keys are in the safe by the entrance. We wish you a pleasant stay.",
+      homeKeyboxTitle: "KEY BOX CODE",
+      homeKeyboxHint: "The key box is located on the entrance metal gate, marked with a small lizard 🦎",
       wifiTitle: "WiFi Connection",
       wifiSub: "Wireless network for guests",
       wifiSsidLabel: "NETWORK NAME",
@@ -1248,13 +1305,16 @@
       adminTitle: "Apartment Administration",
       adminAuthDesc: "Enter the administrator code.",
       adminContinue: "Continue",
-      adminCurrentPin: "Current guest PIN:",
-      adminNewPinLabel: "New PIN (4 digits)",
-      adminSave: "Save new PIN",
-      adminNote: "Note: this change applies only to this browser. For a permanent change across all guests, edit DEFAULT_PIN in the index.html file.",
+      adminEditDesc: "Edit apartment settings.",
+      adminFieldPin: "Guest PIN (4 digits)",
+      adminFieldSsid: "WiFi — network name",
+      adminFieldWifiPass: "WiFi — password",
+      adminFieldKeybox: "Key box code",
+      adminSave: "Save settings",
+      adminNote: "Note: changes apply only to this browser. For a permanent change across all guests, edit the default values in the index.html file.",
       adminErrorAuth: "Incorrect administrator code.",
       adminErrorPin: "PIN must be exactly 4 digits.",
-      adminSaved: "PIN successfully changed ✓"
+      adminSaved: "Settings saved successfully ✓"
     }
   };
 
@@ -1453,6 +1513,9 @@
     });
   });
 
+  // Apply stored WiFi/key-box values to the DOM before first paint of content
+  applyStoredValues();
+
   // Init: saved language, or default SK
   let initial = "sk";
   try {
@@ -1474,17 +1537,18 @@
   const adminAuthInput = document.getElementById("adminAuthInput");
   const adminAuthError = document.getElementById("adminAuthError");
   const adminAuthBtn = document.getElementById("adminAuthBtn");
-  const adminNewPinInput = document.getElementById("adminNewPinInput");
+  const adminFieldPinInput = document.getElementById("adminFieldPinInput");
+  const adminFieldSsid = document.getElementById("adminFieldSsid");
+  const adminFieldWifiPass = document.getElementById("adminFieldWifiPass");
+  const adminFieldKeybox = document.getElementById("adminFieldKeybox");
   const adminChangeError = document.getElementById("adminChangeError");
   const adminSuccess = document.getElementById("adminSuccess");
   const adminSaveBtn = document.getElementById("adminSaveBtn");
-  const adminCurrentPinDisplay = document.getElementById("adminCurrentPinDisplay");
 
   function openAdmin() {
     adminStep1.hidden = false;
     adminStep2.hidden = true;
     adminAuthInput.value = "";
-    adminNewPinInput.value = "";
     adminAuthError.textContent = "";
     adminChangeError.textContent = "";
     adminSuccess.textContent = "";
@@ -1497,8 +1561,11 @@
   function showStep2() {
     adminStep1.hidden = true;
     adminStep2.hidden = false;
-    adminCurrentPinDisplay.textContent = getCurrentPin();
-    setTimeout(() => adminNewPinInput.focus(), 100);
+    adminFieldPinInput.value    = getCurrentPin();
+    adminFieldSsid.value        = getWifiSsid();
+    adminFieldWifiPass.value    = getWifiPass();
+    adminFieldKeybox.value      = getKeybox();
+    setTimeout(() => adminFieldPinInput.focus(), 100);
   }
   function authenticate() {
     if (adminAuthInput.value.trim() === ADMIN_PIN) {
@@ -1510,19 +1577,27 @@
       setTimeout(() => adminAuthInput.classList.remove("error"), 400);
     }
   }
-  function savePin() {
-    const newPin = adminNewPinInput.value.trim();
-    if (!/^\d{4}$/.test(newPin)) {
+  function saveSettings() {
+    const pin     = adminFieldPinInput.value.trim();
+    const ssid    = adminFieldSsid.value.trim();
+    const wpass   = adminFieldWifiPass.value.trim();
+    const kbCode  = adminFieldKeybox.value.trim();
+
+    if (!/^\d{4}$/.test(pin)) {
       adminChangeError.textContent = I18N[currentLang].adminErrorPin;
-      adminNewPinInput.classList.add("error");
-      setTimeout(() => adminNewPinInput.classList.remove("error"), 400);
+      adminFieldPinInput.classList.add("error");
+      setTimeout(() => adminFieldPinInput.classList.remove("error"), 400);
       return;
     }
-    setGuestPin(newPin);
+
+    setStored("guestPin",   pin);
+    setStored("wifiSsid",   ssid);
+    setStored("wifiPass",   wpass);
+    setStored("keyboxCode", kbCode);
+    applyStoredValues();
+
     adminChangeError.textContent = "";
     adminSuccess.textContent = I18N[currentLang].adminSaved;
-    adminCurrentPinDisplay.textContent = newPin;
-    adminNewPinInput.value = "";
     setTimeout(closeAdmin, 1500);
   }
 
@@ -1547,8 +1622,10 @@
   adminModal.addEventListener("click", (e) => { if (e.target === adminModal) closeAdmin(); });
   adminAuthBtn.addEventListener("click", authenticate);
   adminAuthInput.addEventListener("keydown", (e) => { if (e.key === "Enter") authenticate(); });
-  adminSaveBtn.addEventListener("click", savePin);
-  adminNewPinInput.addEventListener("keydown", (e) => { if (e.key === "Enter") savePin(); });
+  adminSaveBtn.addEventListener("click", saveSettings);
+  [adminFieldPinInput, adminFieldSsid, adminFieldWifiPass, adminFieldKeybox].forEach(el => {
+    el.addEventListener("keydown", (e) => { if (e.key === "Enter") saveSettings(); });
+  });
 
   if ("serviceWorker" in navigator) {
     const swCode = "self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>self.clients.claim());self.addEventListener('fetch',()=>{});";
