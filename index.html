@@ -146,7 +146,7 @@
   main {
     flex: 1;
     overflow-y: auto;
-    padding: 22px 20px 28px;
+    padding: 22px 20px calc(env(safe-area-inset-bottom) + 28px);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -422,51 +422,139 @@
     margin-top: 2px;
   }
 
-  /* Bottom nav */
-  nav.bottom-nav {
-    display: flex;
-    background: linear-gradient(180deg, #1f160e 0%, #130d08 100%);
-    border-top: 1px solid var(--border);
-    padding: 8px 4px calc(env(safe-area-inset-bottom) + 8px);
-  }
-  nav.bottom-nav button {
-    flex: 1;
-    background: none;
-    border: none;
-    padding: 6px 1px;
-    font-size: 10px;
-    color: var(--cream-dim);
+  /* Hamburger button in header */
+  .menu-btn {
+    position: absolute;
+    top: calc(env(safe-area-inset-top) + 16px);
+    left: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    padding: 4px 11px;
+    font-size: 18px;
+    line-height: 1;
+    border-radius: 4px;
     cursor: pointer;
+    z-index: 5;
     font-family: "Georgia", serif;
+    transition: background 0.2s;
+  }
+  .menu-btn:active { background: var(--surface-2); }
+
+  /* Drawer backdrop */
+  #drawerBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 6, 3, 0.7);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 80;
+  }
+  #drawerBackdrop.show { opacity: 1; visibility: visible; }
+
+  /* Slide-in drawer */
+  .drawer {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    background:
+      radial-gradient(ellipse at top, rgba(201, 168, 118, 0.06), transparent 60%),
+      linear-gradient(180deg, #251a12 0%, #1a130d 100%);
+    border-right: 1px solid var(--gold-dim);
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6);
+    transform: translateX(-100%);
+    transition: transform 0.35s ease;
+    z-index: 90;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    border-radius: 4px;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .drawer.show { transform: translateX(0); }
+
+  .drawer-head {
+    padding: 22px 20px 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-soft);
     position: relative;
-    transition: color 0.2s;
-    letter-spacing: 1px;
-    min-width: 0;
   }
-  nav.bottom-nav button .icon { font-size: 18px; filter: sepia(0.3); }
-  nav.bottom-nav button .label {
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 8.5px;
-    letter-spacing: 1px;
-    white-space: nowrap;
-  }
-  nav.bottom-nav button.active {
-    color: var(--gold-bright);
-  }
-  nav.bottom-nav button.active .icon { filter: sepia(0) saturate(1.5); }
-  nav.bottom-nav button.active::before {
+  .drawer-head::after {
     content: "";
     position: absolute;
-    top: -8px;
-    left: 25%; right: 25%;
+    left: 20%; right: 20%;
+    bottom: -1px;
     height: 2px;
-    background: var(--gold);
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .drawer-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--cream);
+    padding: 3px;
+    border: 2px solid var(--gold);
+    margin-bottom: 10px;
+  }
+  .drawer-title {
+    font-size: 15px;
+    font-style: italic;
+    color: var(--cream);
+    letter-spacing: 0.5px;
+  }
+  .drawer-close {
+    position: absolute;
+    top: 8px; right: 10px;
+    background: none;
+    border: none;
+    color: var(--cream-dim);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 6px 10px;
+    font-family: "Georgia", serif;
+  }
+  .drawer-close:active { color: var(--cream); }
+
+  .drawer-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer-nav button {
+    background: none;
+    border: none;
+    color: var(--cream);
+    padding: 14px 22px;
+    font-family: "Georgia", serif;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .drawer-nav button:active { background: var(--surface); }
+  .drawer-nav button.active {
+    color: var(--gold-bright);
+    border-left-color: var(--gold);
+    background: var(--surface);
+  }
+  .drawer-nav button .icon {
+    font-size: 20px;
+    filter: sepia(0.3);
+    flex-shrink: 0;
+    width: 26px;
+    text-align: center;
+  }
+  .drawer-nav button.active .icon { filter: sepia(0) saturate(1.4); }
+  .drawer-nav button .label {
+    font-size: 15px;
+    letter-spacing: 0.5px;
   }
 
   /* Full-screen lock gate — shown until correct PIN */
@@ -696,6 +784,7 @@
 <body>
 <div id="app">
   <header>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
     <div class="lang-switch" id="langSwitch">
       <button data-lang="sk" class="active">SK</button>
       <button data-lang="en">EN</button>
@@ -860,14 +949,22 @@
     </section>
   </main>
 
-  <nav class="bottom-nav" id="nav">
-    <button data-target="home" class="active"><span class="icon">🏛️</span><span class="label" data-i18n="navHome">Domov</span></button>
-    <button data-target="tips"><span class="icon">🗺️</span><span class="label" data-i18n="navTips">Tipy</span></button>
-    <button data-target="transport"><span class="icon">🚗</span><span class="label" data-i18n="navTransport">Doprava</span></button>
-    <button data-target="wifi"><span class="icon">📶</span><span class="label" data-i18n="navWifi">WiFi</span></button>
-    <button data-target="rules"><span class="icon">📜</span><span class="label" data-i18n="navRules">Pravidlá</span></button>
-    <button data-target="contact"><span class="icon">✉️</span><span class="label" data-i18n="navContact">Kontakt</span></button>
-  </nav>
+  <div id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <button class="drawer-close" id="drawerClose" aria-label="Close">✕</button>
+      <img src="logo.png" class="drawer-logo" alt="" onerror="this.style.display='none'" />
+      <div class="drawer-title">Apartmán u Mešťana</div>
+    </div>
+    <nav class="drawer-nav" id="nav">
+      <button data-target="home" class="active"><span class="icon">🏛️</span><span class="label" data-i18n="navHome">Domov</span></button>
+      <button data-target="tips"><span class="icon">🗺️</span><span class="label" data-i18n="navTips">Tipy</span></button>
+      <button data-target="transport"><span class="icon">🚗</span><span class="label" data-i18n="navTransport">Doprava</span></button>
+      <button data-target="wifi"><span class="icon">📶</span><span class="label" data-i18n="navWifi">WiFi</span></button>
+      <button data-target="rules"><span class="icon">📜</span><span class="label" data-i18n="navRules">Pravidlá</span></button>
+      <button data-target="contact"><span class="icon">✉️</span><span class="label" data-i18n="navContact">Kontakt</span></button>
+    </nav>
+  </aside>
 </div>
 
 <!-- Full-screen PIN lock gate -->
@@ -1230,10 +1327,30 @@
     }
   }
 
+  // Drawer open / close
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer = document.getElementById("drawer");
+  const drawerBackdrop = document.getElementById("drawerBackdrop");
+  const drawerClose = document.getElementById("drawerClose");
+
+  function openDrawer() {
+    drawer.classList.add("show");
+    drawerBackdrop.classList.add("show");
+  }
+  function closeDrawer() {
+    drawer.classList.remove("show");
+    drawerBackdrop.classList.remove("show");
+  }
+
+  menuBtn.addEventListener("click", openDrawer);
+  drawerClose.addEventListener("click", closeDrawer);
+  drawerBackdrop.addEventListener("click", closeDrawer);
+
   nav.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-target]");
     if (!btn) return;
     showSection(btn.dataset.target);
+    closeDrawer();
   });
 
   // Render tips from TIPS data array
