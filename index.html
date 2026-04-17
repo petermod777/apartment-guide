@@ -668,6 +668,20 @@
     transition: background 0.2s;
   }
   .lock-submit:active { background: var(--gold-bright); }
+  .lock-submit-outlined {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    margin-top: 10px;
+  }
+  .lock-submit-outlined:active {
+    background: var(--surface);
+    color: var(--gold-bright);
+  }
+  .lock-submit-outlined.armed {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
 
   /* Logo gets long-press affordance */
   .lock-logo, .hero-logo, .drawer-logo { cursor: pointer; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
@@ -1027,6 +1041,7 @@
       <div class="admin-success" id="adminSuccess"></div>
 
       <button class="lock-submit" id="adminSaveBtn" data-i18n="adminSave">Uložiť</button>
+      <button class="lock-submit lock-submit-outlined" id="adminResetBtn" data-i18n="adminResetBtn">Obnoviť predvolené</button>
       <p class="admin-note" data-i18n="adminNote">Poznámka: zmeny platia iba v tomto prehliadači. Pre trvalú zmenu pre všetkých hostí upravte predvolené hodnoty v súbore index.html.</p>
     </div>
   </div>
@@ -1040,6 +1055,24 @@
   const DEFAULT_KEYBOX = "1234";
   const ADMIN_PIN = "1964";
   const LONG_PRESS_MS = 1500;
+
+  // Bump this version when you want all admin-stored values to reset on next
+  // load (e.g. after deploying new defaults). Leave it alone for regular updates.
+  const APP_VERSION = "1.0.0";
+  const STORED_KEYS = ["guestPin", "wifiSsid", "wifiPass", "keyboxCode"];
+
+  function clearStoredSettings() {
+    try { STORED_KEYS.forEach(k => localStorage.removeItem(k)); } catch {}
+  }
+  (function versionCheck() {
+    try {
+      const stored = localStorage.getItem("appVersion");
+      // Only wipe if a version was previously recorded AND it differs.
+      // On first introduction of versioning, respect existing settings.
+      if (stored && stored !== APP_VERSION) clearStoredSettings();
+      localStorage.setItem("appVersion", APP_VERSION);
+    } catch {}
+  })();
 
   // ==========================================================================
   // TIPS — edit this list to add / remove / reorder / change tips.
@@ -1237,7 +1270,10 @@
       adminNote: "Poznámka: zmeny platia iba v tomto prehliadači. Pre trvalú zmenu pre všetkých hostí upravte predvolené hodnoty v súbore index.html.",
       adminErrorAuth: "Nesprávny administrátorský kód.",
       adminErrorPin: "PIN musí obsahovať presne 4 číslice.",
-      adminSaved: "Nastavenia boli úspešne uložené ✓"
+      adminSaved: "Nastavenia boli úspešne uložené ✓",
+      adminResetBtn: "Obnoviť predvolené hodnoty",
+      adminResetConfirm: "Ťuknite znova pre potvrdenie",
+      adminResetDone: "Obnovené na predvolené hodnoty ✓"
     },
     en: {
       welcomeTo: "Welcome",
@@ -1314,7 +1350,10 @@
       adminNote: "Note: changes apply only to this browser. For a permanent change across all guests, edit the default values in the index.html file.",
       adminErrorAuth: "Incorrect administrator code.",
       adminErrorPin: "PIN must be exactly 4 digits.",
-      adminSaved: "Settings saved successfully ✓"
+      adminSaved: "Settings saved successfully ✓",
+      adminResetBtn: "Reset to defaults",
+      adminResetConfirm: "Tap again to confirm",
+      adminResetDone: "Reset to defaults ✓"
     }
   };
 
@@ -1544,6 +1583,7 @@
   const adminChangeError = document.getElementById("adminChangeError");
   const adminSuccess = document.getElementById("adminSuccess");
   const adminSaveBtn = document.getElementById("adminSaveBtn");
+  const adminResetBtn = document.getElementById("adminResetBtn");
 
   function openAdmin() {
     adminStep1.hidden = false;
@@ -1625,6 +1665,38 @@
   adminSaveBtn.addEventListener("click", saveSettings);
   [adminFieldPinInput, adminFieldSsid, adminFieldWifiPass, adminFieldKeybox].forEach(el => {
     el.addEventListener("keydown", (e) => { if (e.key === "Enter") saveSettings(); });
+  });
+
+  // Reset-to-defaults: two-tap confirmation to avoid accidental wipes
+  let resetArmed = false;
+  let resetArmTimer = null;
+  const originalResetLabel = () => I18N[currentLang].adminResetBtn;
+  adminResetBtn.addEventListener("click", () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      adminResetBtn.textContent = I18N[currentLang].adminResetConfirm;
+      adminResetBtn.classList.add("armed");
+      clearTimeout(resetArmTimer);
+      resetArmTimer = setTimeout(() => {
+        resetArmed = false;
+        adminResetBtn.textContent = originalResetLabel();
+        adminResetBtn.classList.remove("armed");
+      }, 4000);
+      return;
+    }
+    clearTimeout(resetArmTimer);
+    resetArmed = false;
+    adminResetBtn.classList.remove("armed");
+    adminResetBtn.textContent = originalResetLabel();
+    clearStoredSettings();
+    applyStoredValues();
+    adminFieldPinInput.value  = getCurrentPin();
+    adminFieldSsid.value      = getWifiSsid();
+    adminFieldWifiPass.value  = getWifiPass();
+    adminFieldKeybox.value    = getKeybox();
+    adminChangeError.textContent = "";
+    adminSuccess.textContent = I18N[currentLang].adminResetDone;
+    setTimeout(() => { adminSuccess.textContent = ""; }, 2500);
   });
 
   if ("serviceWorker" in navigator) {
