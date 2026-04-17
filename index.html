@@ -165,8 +165,8 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.14;
-    filter: sepia(0.5) brightness(0.75) contrast(0.95);
+    opacity: 0.4;
+    filter: sepia(0.35) brightness(0.85) contrast(1);
     z-index: -1;
     pointer-events: none;
   }
@@ -174,10 +174,10 @@
     content: "";
     position: absolute;
     inset: -22px -20px -28px;
-    background: radial-gradient(ellipse at center, transparent 0%, var(--bg) 85%);
+    background: radial-gradient(ellipse at center, transparent 20%, var(--bg) 100%);
     z-index: -1;
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 0.45;
   }
   #home::before     { background-image: url('bg/home.jpg'); }
   #tips::before     { background-image: url('bg/tips.jpg'); }
