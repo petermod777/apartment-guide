@@ -150,41 +150,12 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  section { display: none; animation: fade 0.3s ease; position: relative; isolation: isolate; }
+  section { display: none; animation: fade 0.3s ease; }
   section.active { display: block; }
   @keyframes fade {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: none; }
   }
-
-  /* Per-section atmospheric background images (drop files into /bg/ folder) */
-  section::before {
-    content: "";
-    position: absolute;
-    inset: -22px -20px -28px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.4;
-    filter: sepia(0.35) brightness(0.85) contrast(1);
-    z-index: -1;
-    pointer-events: none;
-  }
-  section::after {
-    content: "";
-    position: absolute;
-    inset: -22px -20px -28px;
-    background: radial-gradient(ellipse at center, transparent 20%, var(--bg) 100%);
-    z-index: -1;
-    pointer-events: none;
-    opacity: 0.45;
-  }
-  #home::before     { background-image: url('bg/home.jpg'); }
-  #tips::before     { background-image: url('bg/tips.jpg'); }
-  #transport::before{ background-image: url('bg/transport.jpg'); }
-  #wifi::before     { background-image: url('bg/wifi.jpg'); }
-  #rules::before    { background-image: url('bg/rules.jpg'); }
-  #contact::before  { background-image: url('bg/contact.jpg'); }
 
   /* Ornamental divider */
   .ornament {
@@ -345,6 +316,19 @@
     margin-bottom: 14px;
     box-shadow: var(--shadow);
     border-left: 3px solid var(--gold);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .tip-card:active { background: var(--surface-2); }
+  .tip-card.expanded { border-left-color: var(--gold-bright); }
+  .tip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
   }
   .tip-card .label {
     display: inline-block;
@@ -356,9 +340,17 @@
     padding: 3px 8px;
     border-radius: 2px;
     text-transform: uppercase;
-    margin-bottom: 10px;
     font-family: "Georgia", serif;
   }
+  .tip-toggle {
+    color: var(--gold);
+    font-size: 14px;
+    line-height: 1;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+  .tip-card.expanded .tip-toggle { transform: rotate(180deg); opacity: 1; }
   .tip-card h3 {
     font-size: 18px;
     color: var(--cream);
@@ -374,6 +366,27 @@
     padding-top: 10px;
     border-top: 1px solid var(--border-soft);
     letter-spacing: 0.5px;
+  }
+  .tip-image-wrap {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, margin-top 0.3s ease, opacity 0.4s ease;
+    margin-top: 0;
+    opacity: 0;
+  }
+  .tip-card.expanded .tip-image-wrap {
+    max-height: 500px;
+    margin-top: 14px;
+    opacity: 1;
+  }
+  .tip-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
   }
 
   /* Contact rows */
@@ -772,70 +785,7 @@
       <p class="section-sub" data-i18n="tipsSub">Obľúbené miesta od Vašich hostiteľov</p>
       <div class="ornament">❦</div>
 
-      <div class="tip-card">
-        <span class="label" data-i18n="tipLandmark">Pamiatka</span>
-        <h3 data-i18n="tip1Name">Námestie sv. Trojice</h3>
-        <p data-i18n="tip1Desc">Srdce historického mesta s barokovým morovým stĺpom — hlavné námestie zapísané v UNESCO.</p>
-        <div class="meta" data-i18n="tip1Meta">📍 2 min chôdze</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipUnesco">UNESCO</span>
-        <h3 data-i18n="tip2Name">Kalvária</h3>
-        <p data-i18n="tip2Desc">Baroková Kalvária z 18. storočia — považovaná za najkrajšiu v strednej Európe. Nezabudnuteľné výhľady na celé mesto.</p>
-        <div class="meta" data-i18n="tip2Meta">📍 25 min chôdze · cca 5 min autom</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipCastle">Hrad</span>
-        <h3 data-i18n="tip3Name">Nový zámok</h3>
-        <p data-i18n="tip3Desc">Biela strážna veža zo 16. storočia. Z vyhliadkovej plošiny dovidíte po celú Štiavnicu a okolité kopce.</p>
-        <div class="meta" data-i18n="tip3Meta">📍 12 min chôdze · stúpanie</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipMuseum">Múzeum</span>
-        <h3 data-i18n="tip4Name">Slovenské banské múzeum</h3>
-        <p data-i18n="tip4Desc">Expozícia o stáročnej histórii baníctva. Možnosť zostúpiť do autentickej štôlne — zážitok pre celú rodinu.</p>
-        <div class="meta" data-i18n="tip4Meta">📍 8 min chôdze</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipRestaurant">Reštaurácia</span>
-        <h3 data-i18n="tip5Name">Pivovar Erb</h3>
-        <p data-i18n="tip5Desc">Remeselný pivovar s reštauráciou priamo v centre. Tradičné slovenské jedlá a vlastné pivo.</p>
-        <div class="meta" data-i18n="tip5Meta">📍 5 min chôdze · €€</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipNature">Príroda</span>
-        <h3 data-i18n="tip6Name">Tajch Klinger</h3>
-        <p data-i18n="tip6Desc">Historická banská vodná nádrž — v lete obľúbené miesto na kúpanie, celoročne skvelé na prechádzky.</p>
-        <div class="meta" data-i18n="tip6Meta">📍 20 min chôdze · kúpanie v lete</div>
-      </div>
-
-      <div class="ornament">❦</div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipDaytrip">Výlet</span>
-        <h3 data-i18n="tip7Name">Kaštieľ Svätý Anton</h3>
-        <p data-i18n="tip7Desc">Nádherný barokovo-klasicistický kaštieľ v obci Svätý Anton. Múzeum, rozľahlé záhrady a poľovnícke expozície — ideálny na polodenný výlet.</p>
-        <div class="meta" data-i18n="tip7Meta">📍 10 min autom · 5 km</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipDaytrip">Výlet</span>
-        <h3 data-i18n="tip8Name">Tajch Počúvadlo</h3>
-        <p data-i18n="tip8Desc">Najväčšie zo štiavnických banských jazier. Kúpanie, bicyklovanie okolo vody a viaceré reštaurácie priamo na brehu.</p>
-        <div class="meta" data-i18n="tip8Meta">📍 15 min autom · 7 km</div>
-      </div>
-
-      <div class="tip-card">
-        <span class="label" data-i18n="tipDaytrip">Výlet</span>
-        <h3 data-i18n="tip9Name">Sitno</h3>
-        <p data-i18n="tip9Desc">Najvyšší vrch Štiavnických vrchov (1009 m) opradený legendou o spiacich rytieroch. Ľahká túra z Počúvadla (~40 min) s úchvatným výhľadom.</p>
-        <div class="meta" data-i18n="tip9Meta">📍 15 min autom + 40 min túra</div>
-      </div>
+      <div id="tipsList"></div>
     </section>
 
     <!-- TRANSPORT & PARKING -->
@@ -974,6 +924,105 @@
   const ADMIN_PIN = "9999";
   const LONG_PRESS_MS = 1500;
 
+  // ==========================================================================
+  // TIPS — edit this list to add / remove / reorder / change tips.
+  // Each tip has: img (path, optional), category/name/desc/meta per language.
+  // Use { divider: true } to insert an ornamental separator between tips.
+  // ==========================================================================
+  const TIPS = [
+    {
+      img: "tips/trojice.jpg",
+      category: { sk: "Pamiatka", en: "Landmark" },
+      name: { sk: "Námestie sv. Trojice", en: "Holy Trinity Square" },
+      desc: {
+        sk: "Srdce historického mesta s barokovým morovým stĺpom — hlavné námestie zapísané v UNESCO.",
+        en: "The heart of the historic town with its Baroque plague column — the main UNESCO-listed square."
+      },
+      meta: { sk: "📍 2 min chôdze", en: "📍 2 min walk" }
+    },
+    {
+      img: "tips/kalvaria.jpg",
+      category: { sk: "UNESCO", en: "UNESCO" },
+      name: { sk: "Kalvária", en: "Calvary" },
+      desc: {
+        sk: "Baroková Kalvária z 18. storočia — považovaná za najkrajšiu v strednej Európe. Nezabudnuteľné výhľady na celé mesto.",
+        en: "An 18th-century Baroque Calvary, considered the finest in Central Europe. Unforgettable views of the town."
+      },
+      meta: { sk: "📍 25 min chôdze · cca 5 min autom", en: "📍 25 min walk · 5 min by car" }
+    },
+    {
+      img: "tips/novy-zamok.jpg",
+      category: { sk: "Hrad", en: "Castle" },
+      name: { sk: "Nový zámok", en: "New Castle" },
+      desc: {
+        sk: "Biela strážna veža zo 16. storočia. Z vyhliadkovej plošiny dovidíte po celú Štiavnicu a okolité kopce.",
+        en: "A white 16th-century watchtower. Climb to the top for sweeping views of Štiavnica and the surrounding hills."
+      },
+      meta: { sk: "📍 12 min chôdze · stúpanie", en: "📍 12 min walk · uphill" }
+    },
+    {
+      img: "tips/banske-muzeum.jpg",
+      category: { sk: "Múzeum", en: "Museum" },
+      name: { sk: "Slovenské banské múzeum", en: "Slovak Mining Museum" },
+      desc: {
+        sk: "Expozícia o stáročnej histórii baníctva. Možnosť zostúpiť do autentickej štôlne — zážitok pre celú rodinu.",
+        en: "Centuries of mining history, with the chance to descend into an authentic mine shaft — a family favorite."
+      },
+      meta: { sk: "📍 8 min chôdze", en: "📍 8 min walk" }
+    },
+    {
+      img: "tips/pivovar-erb.jpg",
+      category: { sk: "Reštaurácia", en: "Restaurant" },
+      name: { sk: "Pivovar Erb", en: "Erb Brewery" },
+      desc: {
+        sk: "Remeselný pivovar s reštauráciou priamo v centre. Tradičné slovenské jedlá a vlastné pivo.",
+        en: "Craft brewery and restaurant right in the center. Traditional Slovak cuisine paired with house-brewed beer."
+      },
+      meta: { sk: "📍 5 min chôdze · €€", en: "📍 5 min walk · €€" }
+    },
+    {
+      img: "tips/tajch-klinger.jpg",
+      category: { sk: "Príroda", en: "Nature" },
+      name: { sk: "Tajch Klinger", en: "Klinger Reservoir" },
+      desc: {
+        sk: "Historická banská vodná nádrž — v lete obľúbené miesto na kúpanie, celoročne skvelé na prechádzky.",
+        en: "A historic mining reservoir — a beloved spot for summer swimming and year-round nature walks."
+      },
+      meta: { sk: "📍 20 min chôdze · kúpanie v lete", en: "📍 20 min walk · swimming in summer" }
+    },
+    { divider: true },
+    {
+      img: "tips/svaty-anton.jpg",
+      category: { sk: "Výlet", en: "Day trip" },
+      name: { sk: "Kaštieľ Svätý Anton", en: "Svätý Anton Manor" },
+      desc: {
+        sk: "Nádherný barokovo-klasicistický kaštieľ v obci Svätý Anton. Múzeum, rozľahlé záhrady a poľovnícke expozície — ideálny na polodenný výlet.",
+        en: "A beautiful Baroque-Classicist manor in the village of Svätý Anton. Museum, expansive gardens, and hunting exhibitions — ideal for a half-day trip."
+      },
+      meta: { sk: "📍 10 min autom · 5 km", en: "📍 10 min by car · 5 km" }
+    },
+    {
+      img: "tips/pocuvadlo.jpg",
+      category: { sk: "Výlet", en: "Day trip" },
+      name: { sk: "Tajch Počúvadlo", en: "Počúvadlo Reservoir" },
+      desc: {
+        sk: "Najväčšie zo štiavnických banských jazier. Kúpanie, bicyklovanie okolo vody a viaceré reštaurácie priamo na brehu.",
+        en: "The largest of the Štiavnica mining lakes. Swimming, cycling around the water, and several lakeside restaurants."
+      },
+      meta: { sk: "📍 15 min autom · 7 km", en: "📍 15 min by car · 7 km" }
+    },
+    {
+      img: "tips/sitno.jpg",
+      category: { sk: "Výlet", en: "Day trip" },
+      name: { sk: "Sitno", en: "Sitno" },
+      desc: {
+        sk: "Najvyšší vrch Štiavnických vrchov (1009 m) opradený legendou o spiacich rytieroch. Ľahká túra z Počúvadla (~40 min) s úchvatným výhľadom.",
+        en: "The highest peak of the Štiavnica Hills (1009 m), wrapped in the legend of sleeping knights. An easy hike from Počúvadlo (~40 min) with breathtaking views."
+      },
+      meta: { sk: "📍 15 min autom + 40 min túra", en: "📍 15 min by car + 40 min hike" }
+    }
+  ];
+
   function getCurrentPin() {
     try { return localStorage.getItem("guestPin") || DEFAULT_PIN; }
     catch { return DEFAULT_PIN; }
@@ -1011,40 +1060,6 @@
       ruleCheckout: "<strong>Odchod najneskôr o 11:00.</strong> Kľúče prosíme nechať v trezore.",
       tipsTitle: "Tipy z okolia",
       tipsSub: "Najkrajšie miesta Banskej Štiavnice",
-      tipLandmark: "Pamiatka",
-      tipUnesco: "UNESCO",
-      tipCastle: "Hrad",
-      tipMuseum: "Múzeum",
-      tipRestaurant: "Reštaurácia",
-      tipNature: "Príroda",
-      tip1Name: "Námestie sv. Trojice",
-      tip1Desc: "Srdce historického mesta s barokovým morovým stĺpom — hlavné námestie zapísané v UNESCO.",
-      tip1Meta: "📍 2 min chôdze",
-      tip2Name: "Kalvária",
-      tip2Desc: "Baroková Kalvária z 18. storočia — považovaná za najkrajšiu v strednej Európe. Nezabudnuteľné výhľady na celé mesto.",
-      tip2Meta: "📍 25 min chôdze · cca 5 min autom",
-      tip3Name: "Nový zámok",
-      tip3Desc: "Biela strážna veža zo 16. storočia. Z vyhliadkovej plošiny dovidíte po celú Štiavnicu a okolité kopce.",
-      tip3Meta: "📍 12 min chôdze · stúpanie",
-      tip4Name: "Slovenské banské múzeum",
-      tip4Desc: "Expozícia o stáročnej histórii baníctva. Možnosť zostúpiť do autentickej štôlne — zážitok pre celú rodinu.",
-      tip4Meta: "📍 8 min chôdze",
-      tip5Name: "Pivovar Erb",
-      tip5Desc: "Remeselný pivovar s reštauráciou priamo v centre. Tradičné slovenské jedlá a vlastné pivo.",
-      tip5Meta: "📍 5 min chôdze · €€",
-      tip6Name: "Tajch Klinger",
-      tip6Desc: "Historická banská vodná nádrž — v lete obľúbené miesto na kúpanie, celoročne skvelé na prechádzky.",
-      tip6Meta: "📍 20 min chôdze · kúpanie v lete",
-      tipDaytrip: "Výlet",
-      tip7Name: "Kaštieľ Svätý Anton",
-      tip7Desc: "Nádherný barokovo-klasicistický kaštieľ v obci Svätý Anton. Múzeum, rozľahlé záhrady a poľovnícke expozície — ideálny na polodenný výlet.",
-      tip7Meta: "📍 10 min autom · 5 km",
-      tip8Name: "Tajch Počúvadlo",
-      tip8Desc: "Najväčšie zo štiavnických banských jazier. Kúpanie, bicyklovanie okolo vody a viaceré reštaurácie priamo na brehu.",
-      tip8Meta: "📍 15 min autom · 7 km",
-      tip9Name: "Sitno",
-      tip9Desc: "Najvyšší vrch Štiavnických vrchov (1009 m) opradený legendou o spiacich rytieroch. Ľahká túra z Počúvadla (~40 min) s úchvatným výhľadom.",
-      tip9Meta: "📍 15 min autom + 40 min túra",
       navTransport: "Doprava",
       transportTitle: "Doprava & parkovanie",
       transportSub: "Ako sa k nám dostanete",
@@ -1117,40 +1132,6 @@
       ruleCheckout: "<strong>Check-out by 11:00 AM.</strong> Please leave keys in the safe.",
       tipsTitle: "Local Tips",
       tipsSub: "The finest of Banská Štiavnica",
-      tipLandmark: "Landmark",
-      tipUnesco: "UNESCO",
-      tipCastle: "Castle",
-      tipMuseum: "Museum",
-      tipRestaurant: "Restaurant",
-      tipNature: "Nature",
-      tip1Name: "Holy Trinity Square",
-      tip1Desc: "The heart of the historic town with its Baroque plague column — the main UNESCO-listed square.",
-      tip1Meta: "📍 2 min walk",
-      tip2Name: "Calvary",
-      tip2Desc: "An 18th-century Baroque Calvary, considered the finest in Central Europe. Unforgettable views of the town.",
-      tip2Meta: "📍 25 min walk · 5 min by car",
-      tip3Name: "New Castle",
-      tip3Desc: "A white 16th-century watchtower. Climb to the top for sweeping views of Štiavnica and the surrounding hills.",
-      tip3Meta: "📍 12 min walk · uphill",
-      tip4Name: "Slovak Mining Museum",
-      tip4Desc: "Centuries of mining history, with the chance to descend into an authentic mine shaft — a family favorite.",
-      tip4Meta: "📍 8 min walk",
-      tip5Name: "Erb Brewery",
-      tip5Desc: "Craft brewery and restaurant right in the center. Traditional Slovak cuisine paired with house-brewed beer.",
-      tip5Meta: "📍 5 min walk · €€",
-      tip6Name: "Klinger Reservoir",
-      tip6Desc: "A historic mining reservoir — a beloved spot for summer swimming and year-round nature walks.",
-      tip6Meta: "📍 20 min walk · swimming in summer",
-      tipDaytrip: "Day trip",
-      tip7Name: "Svätý Anton Manor",
-      tip7Desc: "A beautiful Baroque-Classicist manor in the village of Svätý Anton. Museum, expansive gardens, and hunting exhibitions — ideal for a half-day trip.",
-      tip7Meta: "📍 10 min by car · 5 km",
-      tip8Name: "Počúvadlo Reservoir",
-      tip8Desc: "The largest of the Štiavnica mining lakes. Swimming, cycling around the water, and several lakeside restaurants.",
-      tip8Meta: "📍 15 min by car · 7 km",
-      tip9Name: "Sitno",
-      tip9Desc: "The highest peak of the Štiavnica Hills (1009 m), wrapped in the legend of sleeping knights. An easy hike from Počúvadlo (~40 min) with breathtaking views.",
-      tip9Meta: "📍 15 min by car + 40 min hike",
       navTransport: "Transport",
       transportTitle: "Transport & Parking",
       transportSub: "How to reach us",
@@ -1220,6 +1201,7 @@
         b.classList.toggle("active", b.dataset.lang === lang);
       });
     });
+    if (typeof applyTipLang === "function") applyTipLang();
     try { localStorage.setItem("lang", lang); } catch {}
   }
 
@@ -1253,6 +1235,84 @@
     if (!btn) return;
     showSection(btn.dataset.target);
   });
+
+  // Render tips from TIPS data array
+  const tipsList = document.getElementById("tipsList");
+
+  function renderTips() {
+    tipsList.innerHTML = "";
+    TIPS.forEach((tip, i) => {
+      if (tip.divider) {
+        const d = document.createElement("div");
+        d.className = "ornament";
+        d.textContent = "❦";
+        tipsList.appendChild(d);
+        return;
+      }
+      const card = document.createElement("div");
+      card.className = "tip-card";
+      if (tip.img) card.dataset.img = tip.img;
+
+      const header = document.createElement("div");
+      header.className = "tip-header";
+      const label = document.createElement("span");
+      label.className = "label";
+      label.dataset.tipField = i + ":category";
+      const toggle = document.createElement("span");
+      toggle.className = "tip-toggle";
+      toggle.setAttribute("aria-hidden", "true");
+      toggle.textContent = "▾";
+      header.appendChild(label);
+      header.appendChild(toggle);
+
+      const h3 = document.createElement("h3");
+      h3.dataset.tipField = i + ":name";
+      const p = document.createElement("p");
+      p.dataset.tipField = i + ":desc";
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.dataset.tipField = i + ":meta";
+
+      card.appendChild(header);
+      card.appendChild(h3);
+      card.appendChild(p);
+      card.appendChild(meta);
+
+      let img = null, wrap = null;
+      if (tip.img) {
+        wrap = document.createElement("div");
+        wrap.className = "tip-image-wrap";
+        img = document.createElement("img");
+        img.className = "tip-image";
+        img.alt = "";
+        img.loading = "lazy";
+        img.addEventListener("error", () => { wrap.style.display = "none"; });
+        wrap.appendChild(img);
+        card.appendChild(wrap);
+      }
+
+      card.addEventListener("click", () => {
+        const willExpand = !card.classList.contains("expanded");
+        if (willExpand && img && tip.img && !img.src) img.src = tip.img;
+        card.classList.toggle("expanded");
+      });
+
+      tipsList.appendChild(card);
+    });
+    applyTipLang();
+  }
+
+  function applyTipLang() {
+    document.querySelectorAll("[data-tip-field]").forEach(el => {
+      const [i, field] = el.dataset.tipField.split(":");
+      const tip = TIPS[+i];
+      if (tip && tip[field] && tip[field][currentLang] != null) {
+        el.textContent = tip[field][currentLang];
+      }
+    });
+  }
+
+  renderTips();
 
   langSwitches.forEach(ls => {
     ls.addEventListener("click", (e) => {
