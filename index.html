@@ -675,7 +675,7 @@
   .lock-submit:active { background: var(--gold-bright); }
 
   /* Logo gets long-press affordance */
-  .logo, .lock-logo { cursor: pointer; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .lock-logo, .hero-logo, .drawer-logo { cursor: pointer; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
   /* Admin modal */
   #adminModal {
@@ -1532,7 +1532,7 @@
   }
 
   // Long-press on any logo opens admin panel
-  document.querySelectorAll(".logo, .lock-logo, .hero-logo").forEach(el => {
+  document.querySelectorAll(".lock-logo, .hero-logo, .drawer-logo").forEach(el => {
     let pressTimer = null;
     const start = () => {
       pressTimer = setTimeout(openAdmin, LONG_PRESS_MS);
