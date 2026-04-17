@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#1a130d" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Apartmán u Mešťana" />
+<title>Apartmán u Mešťana</title>
+<link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href='data:application/manifest+json,{"name":"Apartm%C3%A1n u Me%C5%A1%C5%A5ana","short_name":"U Me%C5%A1%C5%A5ana","start_url":".","display":"standalone","background_color":"%231a130d","theme_color":"%231a130d","icons":[{"src":"logo.png","sizes":"512x512","type":"image/png"}]}' />
+<style>
+  :root {
+    --bg: #1a130d;
+    --bg-elev: #251a12;
+    --surface: #2e2117;
+    --surface-2: #3a2a1d;
+    --border: #4a3524;
+    --border-soft: #362616;
+    --gold: #c9a876;
+    --gold-bright: #d9bc8e;
+    --gold-dim: #8b7453;
+    --cream: #e8dfce;
+    --cream-dim: #b8a988;
+    --muted: #8a7964;
+    --danger: #c97a6a;
+    --success: #8aa876;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Georgia", "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    color: var(--cream);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--bg);
+    position: relative;
+    border-left: 1px solid var(--border-soft);
+    border-right: 1px solid var(--border-soft);
+  }
+
+  /* Header with logo */
+  header {
+    padding: calc(env(safe-area-inset-top) + 20px) 20px 18px;
+    background:
+      radial-gradient(ellipse at top, rgba(201, 168, 118, 0.08), transparent 70%),
+      linear-gradient(180deg, #251a12 0%, #1a130d 100%);
+    border-bottom: 1px solid var(--border-soft);
+    text-align: center;
+    position: relative;
+  }
+  header::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    transform: translateX(-50%);
+  }
+  header .logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  header .logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--cream);
+    border: 2px solid var(--gold);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+  }
+  header .title-group { text-align: left; }
+  header .eyebrow {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: "Georgia", serif;
+    font-style: italic;
+  }
+  header h1 {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--cream);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    line-height: 1.2;
+  }
+
+  .lang-switch {
+    position: absolute;
+    top: calc(env(safe-area-inset-top) + 18px);
+    right: 16px;
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    font-family: "Georgia", serif;
+  }
+  .lang-switch button {
+    background: none;
+    border: none;
+    color: var(--cream-dim);
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .lang-switch button.active {
+    background: var(--gold);
+    color: #1a130d;
+  }
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 20px 28px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  section { display: none; animation: fade 0.3s ease; position: relative; isolation: isolate; }
+  section.active { display: block; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Per-section atmospheric background images (drop files into /bg/ folder) */
+  section::before {
+    content: "";
+    position: absolute;
+    inset: -22px -20px -28px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.14;
+    filter: sepia(0.5) brightness(0.75) contrast(0.95);
+    z-index: -1;
+    pointer-events: none;
+  }
+  section::after {
+    content: "";
+    position: absolute;
+    inset: -22px -20px -28px;
+    background: radial-gradient(ellipse at center, transparent 0%, var(--bg) 85%);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  #home::before     { background-image: url('bg/home.jpg'); }
+  #tips::before     { background-image: url('bg/tips.jpg'); }
+  #transport::before{ background-image: url('bg/transport.jpg'); }
+  #wifi::before     { background-image: url('bg/wifi.jpg'); }
+  #rules::before    { background-image: url('bg/rules.jpg'); }
+  #contact::before  { background-image: url('bg/contact.jpg'); }
+
+  /* Ornamental divider */
+  .ornament {
+    text-align: center;
+    color: var(--gold-dim);
+    font-size: 18px;
+    letter-spacing: 8px;
+    margin: 14px 0 18px;
+    user-select: none;
+  }
+
+  /* Hero (home) */
+  .hero {
+    background:
+      linear-gradient(135deg, rgba(201, 168, 118, 0.08), rgba(201, 168, 118, 0.02));
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 22px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero::before, .hero::after {
+    content: "";
+    position: absolute;
+    left: 12px; right: 12px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+  .hero::before { top: 8px; }
+  .hero::after { bottom: 8px; }
+  .hero img.hero-logo {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--cream);
+    padding: 3px;
+    border: 1px solid var(--gold);
+    margin-bottom: 12px;
+  }
+  .hero h2 {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 8px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+  .hero p {
+    color: var(--cream-dim);
+    font-size: 15px;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  /* Section titles */
+  h2.section-title {
+    font-size: 24px;
+    font-weight: 400;
+    font-style: italic;
+    text-align: center;
+    color: var(--cream);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  p.section-sub {
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 6px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .card h3 {
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-family: "Georgia", serif;
+  }
+  .card h3 .tag { margin-right: 6px; }
+  .card p { font-size: 15px; color: var(--cream); }
+  .card p.muted { color: var(--cream-dim); font-size: 14px; }
+  .card p + p { margin-top: 8px; }
+
+  /* WiFi */
+  .wifi-value {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold-bright);
+    background: var(--bg);
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+  .copy-btn {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1.5px;
+    font-family: "Georgia", serif;
+    transition: all 0.2s;
+  }
+  .copy-btn:active { transform: scale(0.95); }
+  .copy-btn.copied { background: var(--success); color: var(--bg); border-color: var(--success); }
+
+  /* Rules list */
+  ul.rules { list-style: none; }
+  ul.rules li {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    gap: 14px;
+    font-size: 15px;
+    color: var(--cream);
+  }
+  ul.rules li:last-child { border-bottom: none; }
+  ul.rules li .icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 28px;
+    text-align: center;
+    filter: sepia(0.2);
+  }
+  ul.rules li strong { color: var(--gold); font-weight: 700; }
+
+  /* Tip cards */
+  .tip-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--gold);
+  }
+  .tip-card .label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+    padding: 3px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-family: "Georgia", serif;
+  }
+  .tip-card h3 {
+    font-size: 18px;
+    color: var(--cream);
+    margin-bottom: 6px;
+    font-weight: 400;
+    font-style: italic;
+  }
+  .tip-card p { font-size: 14px; color: var(--cream-dim); }
+  .tip-card .meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+    letter-spacing: 0.5px;
+  }
+
+  /* Contact rows */
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-soft);
+    text-decoration: none;
+    color: inherit;
+  }
+  .contact-row:last-child { border-bottom: none; }
+  .contact-row .c-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .contact-row .c-text .c-label {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .contact-row .c-text .c-value {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--cream);
+    margin-top: 2px;
+  }
+
+  /* Bottom nav */
+  nav.bottom-nav {
+    display: flex;
+    background: linear-gradient(180deg, #1f160e 0%, #130d08 100%);
+    border-top: 1px solid var(--border);
+    padding: 8px 4px calc(env(safe-area-inset-bottom) + 8px);
+  }
+  nav.bottom-nav button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 6px 1px;
+    font-size: 10px;
+    color: var(--cream-dim);
+    cursor: pointer;
+    font-family: "Georgia", serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    border-radius: 4px;
+    position: relative;
+    transition: color 0.2s;
+    letter-spacing: 1px;
+    min-width: 0;
+  }
+  nav.bottom-nav button .icon { font-size: 18px; filter: sepia(0.3); }
+  nav.bottom-nav button .label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  nav.bottom-nav button.active {
+    color: var(--gold-bright);
+  }
+  nav.bottom-nav button.active .icon { filter: sepia(0) saturate(1.5); }
+  nav.bottom-nav button.active::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 25%; right: 25%;
+    height: 2px;
+    background: var(--gold);
+  }
+  nav.bottom-nav button .lock {
+    position: absolute;
+    top: 2px;
+    right: calc(50% - 20px);
+    font-size: 9px;
+    background: var(--gold);
+    color: var(--bg);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+  nav.bottom-nav button.unlocked .lock { display: none; }
+
+  /* PIN modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 6, 3, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+    animation: bgfade 0.2s ease;
+    backdrop-filter: blur(3px);
+  }
+  .modal-backdrop.show { display: flex; }
+  @keyframes bgfade { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--bg-elev);
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    padding: 28px 24px 22px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    animation: pop 0.25s ease;
+    position: relative;
+  }
+  .modal::before, .modal::after {
+    content: "";
+    position: absolute;
+    left: 20px; right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+  .modal::before { top: 10px; }
+  .modal::after { bottom: 10px; }
+  @keyframes pop {
+    from { transform: scale(0.94); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal .lock-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 6px auto 14px;
+  }
+  .modal h3 {
+    font-size: 20px;
+    color: var(--cream);
+    margin-bottom: 6px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+  .modal .desc {
+    font-size: 13px;
+    color: var(--cream-dim);
+    margin-bottom: 20px;
+  }
+
+  .pin-input {
+    width: 100%;
+    font-size: 24px;
+    letter-spacing: 14px;
+    text-align: center;
+    padding: 14px 8px 14px 22px;
+    background: var(--bg);
+    color: var(--gold-bright);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .pin-input:focus { border-color: var(--gold); }
+  .pin-input.error { border-color: var(--danger); animation: shake 0.4s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: 10px;
+    font-style: italic;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-family: "Georgia", serif;
+    background: transparent;
+    color: var(--cream-dim);
+    transition: all 0.2s;
+  }
+  .btn-submit {
+    background: var(--gold);
+    color: var(--bg);
+    border-color: var(--gold);
+  }
+  .btn-submit:active { background: var(--gold-bright); }
+  .btn-cancel:active { background: var(--surface); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="lang-switch" id="langSwitch">
+      <button data-lang="sk" class="active">SK</button>
+      <button data-lang="en">EN</button>
+    </div>
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Apartmán u Mešťana" class="logo" onerror="this.style.display='none'" />
+      <div class="title-group">
+        <div class="eyebrow" data-i18n="welcomeTo">Vitajte v</div>
+        <h1>Apartmán u Mešťana</h1>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="home" class="active">
+      <div class="hero">
+        <img src="logo.png" alt="" class="hero-logo" onerror="this.style.display='none'" />
+        <h2 data-i18n="heroTitle">Vitajte, milý hosť</h2>
+        <p data-i18n="heroDesc">Tešíme sa, že ste u nás. Všetko, čo potrebujete pre príjemný pobyt v našom historickom apartmáne, nájdete v tejto príručke.</p>
+      </div>
+
+      <div class="ornament">❦ ❦ ❦</div>
+
+      <div class="card">
+        <h3><span class="tag">📜</span><span data-i18n="homeStayTitle">VÁŠ POBYT</span></h3>
+        <p class="muted" data-i18n="homeStayText">V spodnom menu nájdete informácie o WiFi, domovom poriadku, tipy na okolie a kontakt na hostiteľa.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🗝️</span><span data-i18n="homeCheckinTitle">UBYTOVANIE</span></h3>
+        <p class="muted" data-i18n="homeCheckinText">Ubytovanie je možné od 15:00. Kľúče nájdete v trezore pri vchode. Prajeme Vám príjemný pobyt.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🔒</span><span data-i18n="homeProtectedTitle">CHRÁNENÉ SEKCIE</span></h3>
+        <p class="muted" data-i18n="homeProtectedText">WiFi, Pravidlá a Kontakt sú chránené PIN kódom, ktorý ste dostali pri príchode.</p>
+      </div>
+    </section>
+
+    <!-- WIFI (protected) -->
+    <section id="wifi">
+      <h2 class="section-title" data-i18n="wifiTitle">WiFi pripojenie</h2>
+      <p class="section-sub" data-i18n="wifiSub">Bezdrôtová sieť pre hostí</p>
+      <div class="ornament">❦</div>
+
+      <div class="card">
+        <h3><span data-i18n="wifiSsidLabel">NÁZOV SIETE</span></h3>
+        <div class="wifi-value">
+          <span id="wifiSsid">UMestana_Guest</span>
+          <button class="copy-btn" data-copy="wifiSsid" data-i18n="copy">KOPÍROVAŤ</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span data-i18n="wifiPassLabel">HESLO</span></h3>
+        <div class="wifi-value">
+          <span id="wifiPass">mestan2024</span>
+          <button class="copy-btn" data-copy="wifiPass" data-i18n="copy">KOPÍROVAŤ</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">💡</span><span data-i18n="wifiTipsLabel">POZNÁMKA</span></h3>
+        <p class="muted" data-i18n="wifiTipsText">Router sa nachádza v obývacej izbe. V prípade problémov s pripojením nás neváhajte kontaktovať.</p>
+      </div>
+    </section>
+
+    <!-- HOUSE RULES (protected) -->
+    <section id="rules">
+      <h2 class="section-title" data-i18n="rulesTitle">Domový poriadok</h2>
+      <p class="section-sub" data-i18n="rulesSub">Niekoľko pravidiel pre príjemný pobyt</p>
+      <div class="ornament">❦</div>
+
+      <div class="card">
+        <ul class="rules">
+          <li><span class="icon">🚭</span><span data-i18n="ruleSmoking"><strong>Zákaz fajčenia</strong> vo vnútri apartmánu. Na balkóne je vyhradený priestor.</span></li>
+          <li><span class="icon">🔇</span><span data-i18n="ruleQuiet"><strong>Nočný pokoj</strong> od 22:00 do 8:00. Prosíme o ohľaduplnosť voči susedom.</span></li>
+          <li><span class="icon">🐾</span><span data-i18n="rulePets"><strong>Bez domácich zvierat</strong>, pokiaľ nebolo vopred dohodnuté inak.</span></li>
+          <li><span class="icon">🎉</span><span data-i18n="ruleParties"><strong>Zákaz osláv a podujatí.</strong> Iba registrovaní hostia.</span></li>
+          <li><span class="icon">👟</span><span data-i18n="ruleShoes"><strong>Vyzúvanie obuvi</strong> vo vnútri. Papuče nájdete pri vchode.</span></li>
+          <li><span class="icon">🗑️</span><span data-i18n="ruleTrash"><strong>Smeti</strong> patria do nádob na prízemí. Triedený odpad do modrých kontajnerov.</span></li>
+          <li><span class="icon">🕐</span><span data-i18n="ruleCheckout"><strong>Odchod najneskôr o 11:00.</strong> Kľúče prosíme nechať v trezore.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LOCAL TIPS -->
+    <section id="tips">
+      <h2 class="section-title" data-i18n="tipsTitle">Tipy z okolia</h2>
+      <p class="section-sub" data-i18n="tipsSub">Obľúbené miesta od Vašich hostiteľov</p>
+      <div class="ornament">❦</div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipLandmark">Pamiatka</span>
+        <h3 data-i18n="tip1Name">Námestie sv. Trojice</h3>
+        <p data-i18n="tip1Desc">Srdce historického mesta s barokovým morovým stĺpom — hlavné námestie zapísané v UNESCO.</p>
+        <div class="meta" data-i18n="tip1Meta">📍 2 min chôdze</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipUnesco">UNESCO</span>
+        <h3 data-i18n="tip2Name">Kalvária</h3>
+        <p data-i18n="tip2Desc">Baroková Kalvária z 18. storočia — považovaná za najkrajšiu v strednej Európe. Nezabudnuteľné výhľady na celé mesto.</p>
+        <div class="meta" data-i18n="tip2Meta">📍 25 min chôdze · cca 5 min autom</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipCastle">Hrad</span>
+        <h3 data-i18n="tip3Name">Nový zámok</h3>
+        <p data-i18n="tip3Desc">Biela strážna veža zo 16. storočia. Z vyhliadkovej plošiny dovidíte po celú Štiavnicu a okolité kopce.</p>
+        <div class="meta" data-i18n="tip3Meta">📍 12 min chôdze · stúpanie</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipMuseum">Múzeum</span>
+        <h3 data-i18n="tip4Name">Slovenské banské múzeum</h3>
+        <p data-i18n="tip4Desc">Expozícia o stáročnej histórii baníctva. Možnosť zostúpiť do autentickej štôlne — zážitok pre celú rodinu.</p>
+        <div class="meta" data-i18n="tip4Meta">📍 8 min chôdze</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipRestaurant">Reštaurácia</span>
+        <h3 data-i18n="tip5Name">Pivovar Erb</h3>
+        <p data-i18n="tip5Desc">Remeselný pivovar s reštauráciou priamo v centre. Tradičné slovenské jedlá a vlastné pivo.</p>
+        <div class="meta" data-i18n="tip5Meta">📍 5 min chôdze · €€</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipNature">Príroda</span>
+        <h3 data-i18n="tip6Name">Tajch Klinger</h3>
+        <p data-i18n="tip6Desc">Historická banská vodná nádrž — v lete obľúbené miesto na kúpanie, celoročne skvelé na prechádzky.</p>
+        <div class="meta" data-i18n="tip6Meta">📍 20 min chôdze · kúpanie v lete</div>
+      </div>
+
+      <div class="ornament">❦</div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipDaytrip">Výlet</span>
+        <h3 data-i18n="tip7Name">Kaštieľ Svätý Anton</h3>
+        <p data-i18n="tip7Desc">Nádherný barokovo-klasicistický kaštieľ v obci Svätý Anton. Múzeum, rozľahlé záhrady a poľovnícke expozície — ideálny na polodenný výlet.</p>
+        <div class="meta" data-i18n="tip7Meta">📍 10 min autom · 5 km</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipDaytrip">Výlet</span>
+        <h3 data-i18n="tip8Name">Tajch Počúvadlo</h3>
+        <p data-i18n="tip8Desc">Najväčšie zo štiavnických banských jazier. Kúpanie, bicyklovanie okolo vody a viaceré reštaurácie priamo na brehu.</p>
+        <div class="meta" data-i18n="tip8Meta">📍 15 min autom · 7 km</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="label" data-i18n="tipDaytrip">Výlet</span>
+        <h3 data-i18n="tip9Name">Sitno</h3>
+        <p data-i18n="tip9Desc">Najvyšší vrch Štiavnických vrchov (1009 m) opradený legendou o spiacich rytieroch. Ľahká túra z Počúvadla (~40 min) s úchvatným výhľadom.</p>
+        <div class="meta" data-i18n="tip9Meta">📍 15 min autom + 40 min túra</div>
+      </div>
+    </section>
+
+    <!-- TRANSPORT & PARKING -->
+    <section id="transport">
+      <h2 class="section-title" data-i18n="transportTitle">Doprava & parkovanie</h2>
+      <p class="section-sub" data-i18n="transportSub">Ako sa k nám dostanete</p>
+      <div class="ornament">❦</div>
+
+      <div class="card">
+        <h3><span class="tag">📍</span><span data-i18n="transportAddressTitle">ADRESA</span></h3>
+        <p>Akademická 6, 969 01 Banská Štiavnica</p>
+        <p class="muted" data-i18n="transportAddressText">Historické centrum mesta, zapísané v zozname UNESCO.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🅿️</span><span data-i18n="transportParkingTitle">PARKOVANIE</span></h3>
+        <p class="muted" data-i18n="transportParkingText">V historickom centre je platená parkovacia zóna v pracovných dňoch od 8:00 do 16:00. Bezplatné parkovisko sa nachádza pri autobusovej stanici (cca 10 min chôdze). Pre presné informácie o parkovaní nás prosím kontaktujte vopred.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🚗</span><span data-i18n="transportCarTitle">PRÍCHOD AUTOM</span></h3>
+        <p><strong data-i18n="transportFromBa">Z Bratislavy</strong> <span data-i18n="transportFromBaText">— cca 2,5 hod po D1 a R1, ďalej smer Žiar nad Hronom → Banská Štiavnica.</span></p>
+        <p><strong data-i18n="transportFromZv">Zo Zvolena</strong> <span data-i18n="transportFromZvText">— cca 35 min po ceste II/525.</span></p>
+        <p><strong data-i18n="transportFromBb">Z Banskej Bystrice</strong> <span data-i18n="transportFromBbText">— cca 1 hod cez Zvolen.</span></p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🚌</span><span data-i18n="transportBusTitle">AUTOBUSOVÁ DOPRAVA</span></h3>
+        <p class="muted" data-i18n="transportBusText">Autobusová stanica je vzdialená cca 1 km (15 min chôdze). Priame spoje premávajú zo Zvolena, Žiaru nad Hronom a Bratislavy. Cestovné poriadky nájdete na cp.hnonline.sk.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🚕</span><span data-i18n="transportTaxiTitle">TAXI</span></h3>
+        <p class="muted" data-i18n="transportTaxiText">Miestne taxi služby sú dostupné telefonicky. Aplikácie ako Bolt v Banskej Štiavnici zvyčajne nepremávajú — odporúčame si taxík objednať vopred.</p>
+      </div>
+    </section>
+
+    <!-- CONTACT (protected) -->
+    <section id="contact">
+      <h2 class="section-title" data-i18n="contactTitle">Kontakt</h2>
+      <p class="section-sub" data-i18n="contactSub">Sme tu pre Vás, kedykoľvek budete potrebovať</p>
+      <div class="ornament">❦</div>
+
+      <div class="card">
+        <a href="tel:+421900000000" class="contact-row">
+          <div class="c-icon">📞</div>
+          <div class="c-text">
+            <div class="c-label" data-i18n="contactCall">ZAVOLAŤ HOSTITEĽOVI</div>
+            <div class="c-value">+421 900 000 000</div>
+          </div>
+        </a>
+        <a href="sms:+421900000000" class="contact-row">
+          <div class="c-icon">💬</div>
+          <div class="c-text">
+            <div class="c-label" data-i18n="contactSms">SMS SPRÁVA</div>
+            <div class="c-value">+421 900 000 000</div>
+          </div>
+        </a>
+        <a href="mailto:info@umestana.sk" class="contact-row">
+          <div class="c-icon">✉️</div>
+          <div class="c-text">
+            <div class="c-label" data-i18n="contactEmail">EMAIL</div>
+            <div class="c-value">info@umestana.sk</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🚨</span><span data-i18n="emergencyTitle">NÚDZOVÁ SITUÁCIA</span></h3>
+        <p class="muted" data-i18n="emergencyText">V prípade núdze volajte <strong>112</strong>. Pri problémoch s apartmánom mimo pracovných hodín nás kontaktujte na čísle vyššie.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" id="nav">
+    <button data-target="home" class="active"><span class="icon">🏛️</span><span class="label" data-i18n="navHome">Domov</span></button>
+    <button data-target="tips"><span class="icon">🗺️</span><span class="label" data-i18n="navTips">Tipy</span></button>
+    <button data-target="transport"><span class="icon">🚗</span><span class="label" data-i18n="navTransport">Doprava</span></button>
+    <button data-target="wifi" data-protected="true"><span class="icon">📶</span><span class="label" data-i18n="navWifi">WiFi</span><span class="lock">🔒</span></button>
+    <button data-target="rules" data-protected="true"><span class="icon">📜</span><span class="label" data-i18n="navRules">Pravidlá</span><span class="lock">🔒</span></button>
+    <button data-target="contact" data-protected="true"><span class="icon">✉️</span><span class="label" data-i18n="navContact">Kontakt</span><span class="lock">🔒</span></button>
+  </nav>
+</div>
+
+<!-- PIN modal -->
+<div class="modal-backdrop" id="pinModal">
+  <div class="modal">
+    <div class="lock-icon">🔒</div>
+    <h3 data-i18n="pinTitle">Zadajte PIN</h3>
+    <p class="desc" data-i18n="pinDesc">Táto sekcia je chránená. Zadajte PIN kód, ktorý ste dostali pri ubytovaní.</p>
+    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="pin-input" id="pinInput" autocomplete="off" />
+    <div class="error-msg" id="pinError"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="pinCancel" data-i18n="pinCancel">Zrušiť</button>
+      <button class="btn-submit" id="pinSubmit" data-i18n="pinUnlock">Odomknúť</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const CORRECT_PIN = "1234";
+  const PROTECTED = new Set(["wifi", "rules", "contact"]);
+
+  const I18N = {
+    sk: {
+      welcomeTo: "Vitajte v",
+      heroTitle: "Vitajte, milý hosť",
+      heroDesc: "Tešíme sa, že ste u nás. Všetko, čo potrebujete pre príjemný pobyt v našom historickom apartmáne, nájdete v tejto príručke.",
+      homeStayTitle: "VÁŠ POBYT",
+      homeStayText: "V spodnom menu nájdete informácie o WiFi, domovom poriadku, tipy na okolie a kontakt na hostiteľa.",
+      homeCheckinTitle: "UBYTOVANIE",
+      homeCheckinText: "Ubytovanie je možné od 15:00. Kľúče nájdete v trezore pri vchode. Prajeme Vám príjemný pobyt.",
+      homeProtectedTitle: "CHRÁNENÉ SEKCIE",
+      homeProtectedText: "WiFi, Pravidlá a Kontakt sú chránené PIN kódom, ktorý ste dostali pri príchode.",
+      wifiTitle: "WiFi pripojenie",
+      wifiSub: "Bezdrôtová sieť pre hostí",
+      wifiSsidLabel: "NÁZOV SIETE",
+      wifiPassLabel: "HESLO",
+      wifiTipsLabel: "POZNÁMKA",
+      wifiTipsText: "Router sa nachádza v obývacej izbe. V prípade problémov s pripojením nás neváhajte kontaktovať.",
+      copy: "KOPÍROVAŤ",
+      copied: "SKOPÍROVANÉ",
+      rulesTitle: "Domový poriadok",
+      rulesSub: "Niekoľko pravidiel pre príjemný pobyt",
+      ruleSmoking: "<strong>Zákaz fajčenia</strong> vo vnútri apartmánu. Na balkóne je vyhradený priestor.",
+      ruleQuiet: "<strong>Nočný pokoj</strong> od 22:00 do 8:00. Prosíme o ohľaduplnosť voči susedom.",
+      rulePets: "<strong>Bez domácich zvierat</strong>, pokiaľ nebolo vopred dohodnuté inak.",
+      ruleParties: "<strong>Zákaz osláv a podujatí.</strong> Iba registrovaní hostia.",
+      ruleShoes: "<strong>Vyzúvanie obuvi</strong> vo vnútri. Papuče nájdete pri vchode.",
+      ruleTrash: "<strong>Smeti</strong> patria do nádob na prízemí. Triedený odpad do modrých kontajnerov.",
+      ruleCheckout: "<strong>Odchod najneskôr o 11:00.</strong> Kľúče prosíme nechať v trezore.",
+      tipsTitle: "Tipy z okolia",
+      tipsSub: "Najkrajšie miesta Banskej Štiavnice",
+      tipLandmark: "Pamiatka",
+      tipUnesco: "UNESCO",
+      tipCastle: "Hrad",
+      tipMuseum: "Múzeum",
+      tipRestaurant: "Reštaurácia",
+      tipNature: "Príroda",
+      tip1Name: "Námestie sv. Trojice",
+      tip1Desc: "Srdce historického mesta s barokovým morovým stĺpom — hlavné námestie zapísané v UNESCO.",
+      tip1Meta: "📍 2 min chôdze",
+      tip2Name: "Kalvária",
+      tip2Desc: "Baroková Kalvária z 18. storočia — považovaná za najkrajšiu v strednej Európe. Nezabudnuteľné výhľady na celé mesto.",
+      tip2Meta: "📍 25 min chôdze · cca 5 min autom",
+      tip3Name: "Nový zámok",
+      tip3Desc: "Biela strážna veža zo 16. storočia. Z vyhliadkovej plošiny dovidíte po celú Štiavnicu a okolité kopce.",
+      tip3Meta: "📍 12 min chôdze · stúpanie",
+      tip4Name: "Slovenské banské múzeum",
+      tip4Desc: "Expozícia o stáročnej histórii baníctva. Možnosť zostúpiť do autentickej štôlne — zážitok pre celú rodinu.",
+      tip4Meta: "📍 8 min chôdze",
+      tip5Name: "Pivovar Erb",
+      tip5Desc: "Remeselný pivovar s reštauráciou priamo v centre. Tradičné slovenské jedlá a vlastné pivo.",
+      tip5Meta: "📍 5 min chôdze · €€",
+      tip6Name: "Tajch Klinger",
+      tip6Desc: "Historická banská vodná nádrž — v lete obľúbené miesto na kúpanie, celoročne skvelé na prechádzky.",
+      tip6Meta: "📍 20 min chôdze · kúpanie v lete",
+      tipDaytrip: "Výlet",
+      tip7Name: "Kaštieľ Svätý Anton",
+      tip7Desc: "Nádherný barokovo-klasicistický kaštieľ v obci Svätý Anton. Múzeum, rozľahlé záhrady a poľovnícke expozície — ideálny na polodenný výlet.",
+      tip7Meta: "📍 10 min autom · 5 km",
+      tip8Name: "Tajch Počúvadlo",
+      tip8Desc: "Najväčšie zo štiavnických banských jazier. Kúpanie, bicyklovanie okolo vody a viaceré reštaurácie priamo na brehu.",
+      tip8Meta: "📍 15 min autom · 7 km",
+      tip9Name: "Sitno",
+      tip9Desc: "Najvyšší vrch Štiavnických vrchov (1009 m) opradený legendou o spiacich rytieroch. Ľahká túra z Počúvadla (~40 min) s úchvatným výhľadom.",
+      tip9Meta: "📍 15 min autom + 40 min túra",
+      navTransport: "Doprava",
+      transportTitle: "Doprava & parkovanie",
+      transportSub: "Ako sa k nám dostanete",
+      transportAddressTitle: "ADRESA",
+      transportAddressText: "Historické centrum mesta, zapísané v zozname UNESCO.",
+      transportParkingTitle: "PARKOVANIE",
+      transportParkingText: "V historickom centre je platená parkovacia zóna v pracovných dňoch od 8:00 do 16:00. Bezplatné parkovisko sa nachádza pri autobusovej stanici (cca 10 min chôdze). Pre presné informácie o parkovaní nás prosím kontaktujte vopred.",
+      transportCarTitle: "PRÍCHOD AUTOM",
+      transportFromBa: "Z Bratislavy",
+      transportFromBaText: "— cca 2,5 hod po D1 a R1, ďalej smer Žiar nad Hronom → Banská Štiavnica.",
+      transportFromZv: "Zo Zvolena",
+      transportFromZvText: "— cca 35 min po ceste II/525.",
+      transportFromBb: "Z Banskej Bystrice",
+      transportFromBbText: "— cca 1 hod cez Zvolen.",
+      transportBusTitle: "AUTOBUSOVÁ DOPRAVA",
+      transportBusText: "Autobusová stanica je vzdialená cca 1 km (15 min chôdze). Priame spoje premávajú zo Zvolena, Žiaru nad Hronom a Bratislavy. Cestovné poriadky nájdete na cp.hnonline.sk.",
+      transportTaxiTitle: "TAXI",
+      transportTaxiText: "Miestne taxi služby sú dostupné telefonicky. Aplikácie ako Bolt v Banskej Štiavnici zvyčajne nepremávajú — odporúčame si taxík objednať vopred.",
+      contactTitle: "Kontakt",
+      contactSub: "Sme tu pre Vás, kedykoľvek budete potrebovať",
+      contactCall: "ZAVOLAŤ HOSTITEĽOVI",
+      contactSms: "SMS SPRÁVA",
+      contactEmail: "EMAIL",
+      emergencyTitle: "NÚDZOVÁ SITUÁCIA",
+      emergencyText: "V prípade núdze volajte <strong>112</strong>. Pri problémoch s apartmánom mimo pracovných hodín nás kontaktujte na čísle vyššie.",
+      navHome: "Domov",
+      navWifi: "WiFi",
+      navRules: "Pravidlá",
+      navTips: "Tipy",
+      navContact: "Kontakt",
+      pinTitle: "Zadajte PIN",
+      pinDesc: "Táto sekcia je chránená. Zadajte PIN kód, ktorý ste dostali pri ubytovaní.",
+      pinCancel: "Zrušiť",
+      pinUnlock: "Odomknúť",
+      pinError: "Nesprávny PIN. Skúste prosím znovu."
+    },
+    en: {
+      welcomeTo: "Welcome to",
+      heroTitle: "Welcome, dear guest",
+      heroDesc: "We're delighted to have you. Everything you need for a pleasant stay in our historic apartment is right here in this guide.",
+      homeStayTitle: "YOUR STAY",
+      homeStayText: "Use the menu below to find WiFi, house rules, local recommendations, and host contact details.",
+      homeCheckinTitle: "CHECK-IN",
+      homeCheckinText: "Check-in is from 3:00 PM. The keys are in the safe by the entrance. We wish you a pleasant stay.",
+      homeProtectedTitle: "PROTECTED SECTIONS",
+      homeProtectedText: "WiFi, House Rules and Contact are protected with the PIN code you received upon arrival.",
+      wifiTitle: "WiFi Connection",
+      wifiSub: "Wireless network for guests",
+      wifiSsidLabel: "NETWORK NAME",
+      wifiPassLabel: "PASSWORD",
+      wifiTipsLabel: "NOTE",
+      wifiTipsText: "The router is located in the living room. Please contact us if you experience any connection issues.",
+      copy: "COPY",
+      copied: "COPIED",
+      rulesTitle: "House Rules",
+      rulesSub: "A few notes for a pleasant stay",
+      ruleSmoking: "<strong>No smoking</strong> inside the apartment. A designated area is available on the balcony.",
+      ruleQuiet: "<strong>Quiet hours</strong> from 10:00 PM to 8:00 AM. Please be considerate of neighbors.",
+      rulePets: "<strong>No pets allowed</strong>, unless previously arranged.",
+      ruleParties: "<strong>No parties or events.</strong> Registered guests only.",
+      ruleShoes: "<strong>Shoes off</strong> inside. Slippers are provided by the entrance.",
+      ruleTrash: "<strong>Trash</strong> goes in the bins on the ground floor. Recycling in blue containers.",
+      ruleCheckout: "<strong>Check-out by 11:00 AM.</strong> Please leave keys in the safe.",
+      tipsTitle: "Local Tips",
+      tipsSub: "The finest of Banská Štiavnica",
+      tipLandmark: "Landmark",
+      tipUnesco: "UNESCO",
+      tipCastle: "Castle",
+      tipMuseum: "Museum",
+      tipRestaurant: "Restaurant",
+      tipNature: "Nature",
+      tip1Name: "Holy Trinity Square",
+      tip1Desc: "The heart of the historic town with its Baroque plague column — the main UNESCO-listed square.",
+      tip1Meta: "📍 2 min walk",
+      tip2Name: "Calvary",
+      tip2Desc: "An 18th-century Baroque Calvary, considered the finest in Central Europe. Unforgettable views of the town.",
+      tip2Meta: "📍 25 min walk · 5 min by car",
+      tip3Name: "New Castle",
+      tip3Desc: "A white 16th-century watchtower. Climb to the top for sweeping views of Štiavnica and the surrounding hills.",
+      tip3Meta: "📍 12 min walk · uphill",
+      tip4Name: "Slovak Mining Museum",
+      tip4Desc: "Centuries of mining history, with the chance to descend into an authentic mine shaft — a family favorite.",
+      tip4Meta: "📍 8 min walk",
+      tip5Name: "Erb Brewery",
+      tip5Desc: "Craft brewery and restaurant right in the center. Traditional Slovak cuisine paired with house-brewed beer.",
+      tip5Meta: "📍 5 min walk · €€",
+      tip6Name: "Klinger Reservoir",
+      tip6Desc: "A historic mining reservoir — a beloved spot for summer swimming and year-round nature walks.",
+      tip6Meta: "📍 20 min walk · swimming in summer",
+      tipDaytrip: "Day trip",
+      tip7Name: "Svätý Anton Manor",
+      tip7Desc: "A beautiful Baroque-Classicist manor in the village of Svätý Anton. Museum, expansive gardens, and hunting exhibitions — ideal for a half-day trip.",
+      tip7Meta: "📍 10 min by car · 5 km",
+      tip8Name: "Počúvadlo Reservoir",
+      tip8Desc: "The largest of the Štiavnica mining lakes. Swimming, cycling around the water, and several lakeside restaurants.",
+      tip8Meta: "📍 15 min by car · 7 km",
+      tip9Name: "Sitno",
+      tip9Desc: "The highest peak of the Štiavnica Hills (1009 m), wrapped in the legend of sleeping knights. An easy hike from Počúvadlo (~40 min) with breathtaking views.",
+      tip9Meta: "📍 15 min by car + 40 min hike",
+      navTransport: "Transport",
+      transportTitle: "Transport & Parking",
+      transportSub: "How to reach us",
+      transportAddressTitle: "ADDRESS",
+      transportAddressText: "Historic town center, UNESCO World Heritage site.",
+      transportParkingTitle: "PARKING",
+      transportParkingText: "The historic center has a paid parking zone on weekdays from 8:00 AM to 4:00 PM. A free parking lot is available near the bus station (about 10 min on foot). Please contact us in advance for specific parking instructions.",
+      transportCarTitle: "BY CAR",
+      transportFromBa: "From Bratislava",
+      transportFromBaText: "— approx. 2.5 hours via the D1 and R1 highways, then towards Žiar nad Hronom → Banská Štiavnica.",
+      transportFromZv: "From Zvolen",
+      transportFromZvText: "— approx. 35 min via road II/525.",
+      transportFromBb: "From Banská Bystrica",
+      transportFromBbText: "— approx. 1 hour via Zvolen.",
+      transportBusTitle: "BY BUS",
+      transportBusText: "The bus station is about 1 km away (15 min on foot). Direct connections run from Zvolen, Žiar nad Hronom, and Bratislava. Timetables at cp.hnonline.sk.",
+      transportTaxiTitle: "TAXI",
+      transportTaxiText: "Local taxi services are available by phone. Apps like Bolt usually don't operate in Banská Štiavnica — we recommend booking a taxi in advance.",
+      contactTitle: "Contact",
+      contactSub: "We're here whenever you need us",
+      contactCall: "CALL THE HOST",
+      contactSms: "TEXT MESSAGE",
+      contactEmail: "EMAIL",
+      emergencyTitle: "EMERGENCY",
+      emergencyText: "In case of emergency, dial <strong>112</strong>. For apartment issues after hours, reach us at the number above.",
+      navHome: "Home",
+      navWifi: "WiFi",
+      navRules: "Rules",
+      navTips: "Tips",
+      navContact: "Contact",
+      pinTitle: "Enter PIN",
+      pinDesc: "This section is protected. Please enter the PIN you received at check-in.",
+      pinCancel: "Cancel",
+      pinUnlock: "Unlock",
+      pinError: "Incorrect PIN. Please try again."
+    }
+  };
+
+  let unlocked = false;
+  let pendingTarget = null;
+  let currentLang = "sk";
+
+  const nav = document.getElementById("nav");
+  const sections = document.querySelectorAll("main section");
+  const modal = document.getElementById("pinModal");
+  const pinInput = document.getElementById("pinInput");
+  const pinError = document.getElementById("pinError");
+  const pinSubmit = document.getElementById("pinSubmit");
+  const pinCancel = document.getElementById("pinCancel");
+  const langSwitch = document.getElementById("langSwitch");
+
+  function applyLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    const dict = I18N[lang];
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (dict[key] != null) el.innerHTML = dict[key];
+    });
+    langSwitch.querySelectorAll("button").forEach(b => {
+      b.classList.toggle("active", b.dataset.lang === lang);
+    });
+    try { localStorage.setItem("lang", lang); } catch {}
+  }
+
+  function showSection(id) {
+    sections.forEach(s => s.classList.toggle("active", s.id === id));
+    nav.querySelectorAll("button").forEach(b => {
+      b.classList.toggle("active", b.dataset.target === id);
+    });
+    document.querySelector("main").scrollTop = 0;
+  }
+
+  function markUnlocked() {
+    unlocked = true;
+    nav.querySelectorAll("button[data-protected='true']").forEach(b => {
+      b.classList.add("unlocked");
+    });
+  }
+
+  function openModal(target) {
+    pendingTarget = target;
+    pinInput.value = "";
+    pinError.textContent = "";
+    pinInput.classList.remove("error");
+    modal.classList.add("show");
+    setTimeout(() => pinInput.focus(), 50);
+  }
+
+  function closeModal() {
+    modal.classList.remove("show");
+    pendingTarget = null;
+  }
+
+  function tryUnlock() {
+    const value = pinInput.value.trim();
+    if (value === CORRECT_PIN) {
+      markUnlocked();
+      const target = pendingTarget;
+      closeModal();
+      if (target) showSection(target);
+    } else {
+      pinError.textContent = I18N[currentLang].pinError;
+      pinInput.classList.add("error");
+      pinInput.value = "";
+      setTimeout(() => pinInput.classList.remove("error"), 400);
+      pinInput.focus();
+    }
+  }
+
+  nav.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-target]");
+    if (!btn) return;
+    const target = btn.dataset.target;
+    const isProtected = btn.dataset.protected === "true";
+    if (isProtected && !unlocked) openModal(target);
+    else showSection(target);
+  });
+
+  langSwitch.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-lang]");
+    if (!btn) return;
+    applyLang(btn.dataset.lang);
+  });
+
+  pinSubmit.addEventListener("click", tryUnlock);
+  pinCancel.addEventListener("click", closeModal);
+  pinInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") tryUnlock();
+    if (e.key === "Escape") closeModal();
+  });
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+  document.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.copy;
+      const text = document.getElementById(id).textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const r = document.createRange();
+        r.selectNode(document.getElementById(id));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(r);
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+      }
+      btn.textContent = I18N[currentLang].copied;
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = I18N[currentLang].copy;
+        btn.classList.remove("copied");
+      }, 1400);
+    });
+  });
+
+  // Init: saved language, or browser language, or default SK
+  let initial = "sk";
+  try {
+    const saved = localStorage.getItem("lang");
+    if (saved === "sk" || saved === "en") initial = saved;
+  } catch {}
+  applyLang(initial);
+
+  if ("serviceWorker" in navigator) {
+    const swCode = "self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>self.clients.claim());self.addEventListener('fetch',()=>{});";
+    const blob = new Blob([swCode], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(url).catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
