@@ -61,15 +61,17 @@
     border-right: 1px solid var(--border-soft);
   }
 
-  /* Header with logo */
+  /* Header */
   header {
-    padding: calc(env(safe-area-inset-top) + 20px) 20px 18px;
+    padding: calc(env(safe-area-inset-top) + 14px) 10px 14px;
     background:
       radial-gradient(ellipse at top, rgba(201, 168, 118, 0.08), transparent 70%),
       linear-gradient(180deg, #251a12 0%, #1a130d 100%);
     border-bottom: 1px solid var(--border-soft);
-    text-align: center;
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   header::after {
     content: "";
@@ -81,23 +83,12 @@
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
     transform: translateX(-50%);
   }
-  header .logo-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
+  header .title-group {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    padding: 0 2px;
   }
-  header .logo {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: var(--cream);
-    border: 2px solid var(--gold);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    flex-shrink: 0;
-  }
-  header .title-group { text-align: left; }
   header .eyebrow {
     font-size: 10px;
     letter-spacing: 3px;
@@ -107,24 +98,25 @@
     font-style: italic;
   }
   header h1 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
     color: var(--cream);
     letter-spacing: 0.5px;
     margin-top: 2px;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .lang-switch {
-    position: absolute;
-    top: calc(env(safe-area-inset-top) + 18px);
-    right: 16px;
     display: flex;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 20px;
     overflow: hidden;
     font-family: "Georgia", serif;
+    flex-shrink: 0;
   }
   .lang-switch button {
     background: none;
@@ -424,20 +416,17 @@
 
   /* Hamburger button in header */
   .menu-btn {
-    position: absolute;
-    top: calc(env(safe-area-inset-top) + 16px);
-    left: 14px;
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--gold);
-    padding: 4px 11px;
+    padding: 5px 11px;
     font-size: 18px;
     line-height: 1;
     border-radius: 4px;
     cursor: pointer;
-    z-index: 5;
     font-family: "Georgia", serif;
     transition: background 0.2s;
+    flex-shrink: 0;
   }
   .menu-btn:active { background: var(--surface-2); }
 
@@ -578,6 +567,7 @@
     position: absolute;
     top: calc(env(safe-area-inset-top) + 16px);
     right: 16px;
+    z-index: 10;
   }
   .lock-content {
     text-align: center;
@@ -789,12 +779,9 @@
       <button data-lang="sk" class="active">SK</button>
       <button data-lang="en">EN</button>
     </div>
-    <div class="logo-wrap">
-      <img src="logo.png" alt="Apartmán u Mešťana" class="logo" onerror="this.style.display='none'" />
-      <div class="title-group">
-        <div class="eyebrow" data-i18n="welcomeTo">Vitajte v</div>
-        <h1>Apartmán u Mešťana</h1>
-      </div>
+    <div class="title-group">
+      <div class="eyebrow" data-i18n="welcomeTo">Vitajte v</div>
+      <h1>Apartmán u Mešťana</h1>
     </div>
   </header>
 
