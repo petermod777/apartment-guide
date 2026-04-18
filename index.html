@@ -377,6 +377,50 @@
     background: var(--bg);
   }
 
+  /* Parking spot cards */
+  .parking-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--gold);
+  }
+  .parking-card h4 {
+    font-size: 16px;
+    color: var(--cream);
+    margin-bottom: 6px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.3px;
+  }
+  .parking-card p {
+    font-size: 14px;
+    color: var(--cream-dim);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .parking-map-btn {
+    display: inline-block;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 7px 14px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-family: "Georgia", serif;
+    transition: all 0.2s;
+  }
+  .parking-map-btn:active {
+    background: var(--gold);
+    color: var(--bg);
+  }
+
   /* Contact rows */
   .contact-row {
     display: flex;
@@ -1027,8 +1071,10 @@
 
       <div class="card">
         <h3><span class="tag">🅿️</span><span data-i18n="transportParkingTitle">PARKOVANIE</span></h3>
-        <p class="muted" data-i18n="transportParkingText">V historickom centre je platená parkovacia zóna v pracovných dňoch od 8:00 do 16:00. Bezplatné parkovisko sa nachádza pri autobusovej stanici (cca 10 min chôdze). Pre presné informácie o parkovaní nás prosím kontaktujte vopred.</p>
+        <p class="muted" data-i18n="transportParkingIntro">V historickom centre je platená parkovacia zóna. Nižšie nájdete odporúčané miesta na parkovanie — klepnutím na tlačidlo sa otvorí mapa.</p>
       </div>
+
+      <div id="parkingList"></div>
 
       <div class="card">
         <h3><span class="tag">🚗</span><span data-i18n="transportCarTitle">PRÍCHOD AUTOM</span></h3>
@@ -1331,6 +1377,31 @@
     { img: "gallery/15.jpg" }
   ];
 
+  // ==========================================================================
+  // PARKING — recommended parking spots in Banská Štiavnica.
+  // `mapQuery` can be either:
+  //   - GPS coords like "48.4574,18.8916" (most accurate)
+  //   - A search string like "Parkovisko autobusová stanica Banská Štiavnica"
+  // Tip: in Google Maps, right-click a spot → "What's here?" to copy coords.
+  // ==========================================================================
+  const PARKING = [
+    {
+      name: { sk: "Parkovisko Akademická", en: "Akademická parking" },
+      desc: { sk: "Parkovanie najbližšie k nášmu apartmánu.", en: "Closest parking to our apartment." },
+      mapQuery: "48.458878,18.897760"
+    },
+    {
+      name: { sk: "Parkovisko Mládežnícka", en: "Mládežnícka parking" },
+      desc: { sk: "Alternatívne parkovanie, krátka prechádzka k apartmánu.", en: "Alternative parking, a short walk to the apartment." },
+      mapQuery: "48.457628,18.902462"
+    },
+    {
+      name: { sk: "🏠 Náš apartmán — Akademická 6", en: "🏠 Our apartment — Akademická 6" },
+      desc: { sk: "Vaša cieľová adresa.", en: "Your destination." },
+      mapQuery: "48.458642,18.896763"
+    }
+  ];
+
   function getStored(key, fallback) {
     try { return localStorage.getItem(key) || fallback; }
     catch { return fallback; }
@@ -1388,7 +1459,8 @@
       transportAddressTitle: "ADRESA",
       transportAddressText: "Historické centrum mesta, zapísané v zozname UNESCO.",
       transportParkingTitle: "PARKOVANIE",
-      transportParkingText: "V historickom centre je platená parkovacia zóna v pracovných dňoch od 8:00 do 16:00. Bezplatné parkovisko sa nachádza pri autobusovej stanici (cca 10 min chôdze). Pre presné informácie o parkovaní nás prosím kontaktujte vopred.",
+      transportParkingIntro: "V historickom centre je platená parkovacia zóna. Nižšie nájdete odporúčané miesta na parkovanie — klepnutím na tlačidlo sa otvorí mapa.",
+      parkingMapBtn: "Zobraziť na mape",
       transportCarTitle: "PRÍCHOD AUTOM",
       transportFromBa: "Z Bratislavy",
       transportFromBaText: "— cca 2,5 hod po D1 a R1, ďalej smer Žiar nad Hronom → Banská Štiavnica.",
@@ -1472,7 +1544,8 @@
       transportAddressTitle: "ADDRESS",
       transportAddressText: "Historic town center, UNESCO World Heritage site.",
       transportParkingTitle: "PARKING",
-      transportParkingText: "The historic center has a paid parking zone on weekdays from 8:00 AM to 4:00 PM. A free parking lot is available near the bus station (about 10 min on foot). Please contact us in advance for specific parking instructions.",
+      transportParkingIntro: "The historic center has a paid parking zone. Below are recommended parking spots — tap the button to open the location in your map app.",
+      parkingMapBtn: "Show on map",
       transportCarTitle: "BY CAR",
       transportFromBa: "From Bratislava",
       transportFromBaText: "— approx. 2.5 hours via the D1 and R1 highways, then towards Žiar nad Hronom → Banská Štiavnica.",
@@ -1547,6 +1620,7 @@
     });
     if (typeof applyTipLang === "function") applyTipLang();
     if (typeof applyGalleryLang === "function") applyGalleryLang();
+    if (typeof applyParkingLang === "function") applyParkingLang();
     try { localStorage.setItem("lang", lang); } catch {}
   }
 
@@ -1797,6 +1871,57 @@
   }, { passive: true });
 
   renderGallery();
+
+  // ==========================================================================
+  // Parking: list of recommended spots, each with a "show on map" button
+  // ==========================================================================
+  const parkingList = document.getElementById("parkingList");
+
+  function renderParking() {
+    parkingList.innerHTML = "";
+    PARKING.forEach((p, i) => {
+      const card = document.createElement("div");
+      card.className = "parking-card";
+
+      const name = document.createElement("h4");
+      name.dataset.parkingField = i + ":name";
+      card.appendChild(name);
+
+      const desc = document.createElement("p");
+      desc.dataset.parkingField = i + ":desc";
+      card.appendChild(desc);
+
+      if (p.mapQuery) {
+        const link = document.createElement("a");
+        link.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(p.mapQuery);
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.className = "parking-map-btn";
+        link.dataset.parkingField = i + ":btn";
+        card.appendChild(link);
+      }
+
+      parkingList.appendChild(card);
+    });
+    applyParkingLang();
+  }
+
+  function applyParkingLang() {
+    document.querySelectorAll("[data-parking-field]").forEach(el => {
+      const parts = el.dataset.parkingField.split(":");
+      const idx = +parts[0];
+      const field = parts[1];
+      const p = PARKING[idx];
+      if (!p) return;
+      if (field === "btn") {
+        el.textContent = "🗺️ " + (I18N[currentLang].parkingMapBtn || "Show on map");
+      } else if (p[field] && p[field][currentLang] != null) {
+        el.textContent = p[field][currentLang];
+      }
+    });
+  }
+
+  renderParking();
 
   langSwitches.forEach(ls => {
     ls.addEventListener("click", (e) => {

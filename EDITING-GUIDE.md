@@ -28,6 +28,7 @@ Where to change things in `index.html`. Use **Ctrl+F** to find the exact strings
 | Key box hint text | `homeKeyboxHint` | i18n dictionaries |
 | All 9 local tips | `const TIPS = [` | JS array (single source) |
 | Apartment photo gallery | `const GALLERY = [` | JS array (single source) |
+| Recommended parking spots | `const PARKING = [` | JS array (single source) |
 | Logo image | File: `logo.png` | Image file |
 | Tip images | Folder: `tips/` | Image files |
 | Gallery photos | Folder: `gallery/` | Image files |
@@ -97,6 +98,32 @@ Each tip is a single object:
 **To add an ornamental separator:** insert `{ divider: true },` where you want the ❦.
 
 After editing text, the image path and filename stay the same — rename the image file OR update `img` path. Image not found → card still works, just no photo.
+
+---
+
+## 🅿️ Parking spots (Doprava section)
+
+Recommended parking locations live in a `PARKING` array in `index.html`. Each spot shows as a small card with a "Show on map" button that opens the user's default map app.
+
+Search for `const PARKING = [` in `index.html`:
+
+```js
+{
+  name: { sk: "Parkovisko pri autobusovej stanici", en: "Bus station parking" },
+  desc: { sk: "Bezplatné, väčšia kapacita.", en: "Free, larger capacity." },
+  mapQuery: "Autobusová stanica Banská Štiavnica"
+}
+```
+
+**`mapQuery`** can be either:
+- **GPS coords** — `"48.4574,18.8916"` (most accurate). Get them by right-clicking a spot in Google Maps → *"What's here?"* → copy the numbers.
+- **Or a search string** — `"Parkovisko autobusová stanica Banská Štiavnica"` (easier, but less precise).
+
+**To add a spot:** copy one object, paste, update fields.
+**To remove:** delete the object.
+**To reorder:** move it.
+
+The map button opens `google.com/maps` — on mobile this auto-launches the Google Maps app (Android) or Apple Maps/web fallback (iOS).
 
 ---
 
