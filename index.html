@@ -295,6 +295,84 @@
   }
   ul.rules li strong { color: var(--gold); font-weight: 700; }
 
+  /* Emergency card */
+  .emergency-card { border-left: 3px solid var(--danger); }
+  .emergency-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 12px;
+  }
+  .emergency-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--cream);
+    gap: 12px;
+  }
+  .emergency-list li:last-child { border-bottom: none; }
+  .emergency-list a {
+    color: var(--gold-bright);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    background: var(--bg);
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .emergency-list a:active {
+    border-color: var(--gold);
+  }
+
+  /* Checkout checklist */
+  .checkout-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0;
+  }
+  .checkout-list li {
+    padding: 10px 0 10px 26px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 15px;
+    color: var(--cream);
+    position: relative;
+    line-height: 1.5;
+  }
+  .checkout-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .checkout-list li:last-child { border-bottom: none; }
+  .checkout-list li strong { color: var(--gold-bright); }
+  .checkout-list li em { color: var(--cream-dim); font-style: italic; }
+
+  .checkout-thanks {
+    margin-top: 14px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Rating card */
+  .rating-card { text-align: center; }
+  .rating-card h3 { justify-content: center; display: flex; }
+  .rating-stars {
+    font-size: 24px;
+    color: var(--gold-bright);
+    letter-spacing: 5px;
+    margin: 8px 0 12px;
+  }
+
   /* Tip cards */
   .tip-card {
     background: var(--surface);
@@ -1029,22 +1107,38 @@
       </div>
     </section>
 
-    <!-- HOUSE RULES (protected) -->
+    <!-- RULES & INFO -->
     <section id="rules">
       <h2 class="section-title" data-i18n="rulesTitle">Domový poriadok</h2>
-      <p class="section-sub" data-i18n="rulesSub">Niekoľko pravidiel pre príjemný pobyt</p>
+      <p class="section-sub" data-i18n="rulesSub">Dôležité informácie pre Váš pobyt</p>
       <div class="ornament">❦</div>
 
-      <div class="card">
-        <ul class="rules">
-          <li><span class="icon">🚭</span><span data-i18n="ruleSmoking"><strong>Zákaz fajčenia</strong> vo vnútri apartmánu. Na balkóne je vyhradený priestor.</span></li>
-          <li><span class="icon">🔇</span><span data-i18n="ruleQuiet"><strong>Nočný pokoj</strong> od 22:00 do 8:00. Prosíme o ohľaduplnosť voči susedom.</span></li>
-          <li><span class="icon">🐾</span><span data-i18n="rulePets"><strong>Bez domácich zvierat</strong>, pokiaľ nebolo vopred dohodnuté inak.</span></li>
-          <li><span class="icon">🎉</span><span data-i18n="ruleParties"><strong>Zákaz osláv a podujatí.</strong> Iba registrovaní hostia.</span></li>
-          <li><span class="icon">👟</span><span data-i18n="ruleShoes"><strong>Vyzúvanie obuvi</strong> vo vnútri. Papuče nájdete pri vchode.</span></li>
-          <li><span class="icon">🗑️</span><span data-i18n="ruleTrash"><strong>Smeti</strong> patria do nádob na prízemí. Triedený odpad do modrých kontajnerov.</span></li>
-          <li><span class="icon">🕐</span><span data-i18n="ruleCheckout"><strong>Odchod najneskôr o 11:00.</strong> Kľúče prosíme nechať v trezore.</span></li>
+      <div class="card emergency-card">
+        <h3><span class="tag">🚨</span><span data-i18n="emergInfoTitle">INFO V PRÍPADE NÚDZE</span></h3>
+        <ul class="emergency-list">
+          <li><span data-i18n="emergLineLabel">Tiesňová linka</span><a href="tel:112">112</a></li>
+          <li><span data-i18n="emergMedicalLabel">Zdravotná pohotovosť</span><a href="tel:155">155</a></li>
+          <li><span data-i18n="emergPoliceLabel">Polícia</span><a href="tel:158">158</a></li>
+          <li><span data-i18n="emergFireLabel">Hasiči</span><a href="tel:150">150</a></li>
         </ul>
+        <p class="muted" data-i18n="emergExtinguisherText">Hasiaci prístroj je umiestnený pred vstupom do apartmánu — po pravej strane pod strechou.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">📋</span><span data-i18n="rulesListTitle">PRAVIDLÁ APARTMÁNU</span></h3>
+        <ul class="rules" id="rulesList"></ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="tag">🧳</span><span data-i18n="checkoutTitle">POKYNY K ODCHODU</span></h3>
+        <ul class="checkout-list" id="checkoutList"></ul>
+        <p class="muted checkout-thanks" data-i18n="checkoutThanks">Ďakujeme za Váš pobyt ♥ Prajeme Vám šťastnú cestu a radi Vás opäť privítame.</p>
+      </div>
+
+      <div class="card rating-card">
+        <h3><span class="tag">⭐</span><span data-i18n="ratingTitle">HODNOTENIE</span></h3>
+        <p class="rating-stars">★★★★★</p>
+        <p class="muted" data-i18n="ratingText">Ak ste boli so svojím pobytom spokojní, úctivo Vás prosíme o pozitívne hodnotenie. Ďakujeme!</p>
       </div>
     </section>
 
@@ -1402,6 +1496,34 @@
     }
   ];
 
+  // ==========================================================================
+  // RULES — apartment rules list (icon + bilingual text).
+  // HTML tags like <strong> are allowed in the text.
+  // ==========================================================================
+  const RULES = [
+    { icon: "💧", sk: "<strong>Voda z vodovodu je pitná.</strong>", en: "<strong>Tap water is drinkable.</strong>" },
+    { icon: "🚭", sk: "<strong>Zákaz fajčenia</strong> vo vnútri apartmánu.", en: "<strong>No smoking</strong> inside the apartment." },
+    { icon: "🐾", sk: "<strong>Zvieratá nie sú povolené</strong>, pokiaľ nebolo vopred dohodnuté inak.", en: "<strong>No pets</strong> unless previously arranged." },
+    { icon: "🔇", sk: "<strong>Večierky nie sú povolené.</strong> Nočný kľud: 22:00 – 06:00.", en: "<strong>No parties.</strong> Quiet hours: 10:00 PM – 6:00 AM." },
+    { icon: "📜", sk: "<strong>Ubytovací poriadok</strong> je zavesený na stene vľavo.", en: "<strong>House rules</strong> are hung on the wall to the left." },
+    { icon: "🛋️", sk: "Vybavenie apartmánu je vlastníctvom ubytovateľa. V prípade poškodenia alebo odcudzenia si ubytovateľ vyhradzuje právo účtovať vzniknutú škodu.", en: "The apartment equipment is the property of the landlord. In case of damage or theft, the landlord reserves the right to charge for damages." },
+    { icon: "📢", sk: "Prosíme, <strong>nahláste</strong> hostiteľovi akúkoľvek poruchu.", en: "Please <strong>report</strong> any malfunction to the host." },
+    { icon: "🙂", sk: "<strong>Užite si svoj pobyt!</strong> <em>(najdôležitejšie pravidlo)</em>", en: "<strong>Enjoy your stay!</strong> <em>(the most important rule)</em>" }
+  ];
+
+  // ==========================================================================
+  // CHECKOUT — check-out checklist items (bilingual).
+  // ==========================================================================
+  const CHECKOUT = [
+    { sk: "Odhlásenie do <strong>10:00 hod.</strong>", en: "Check-out by <strong>10:00 AM.</strong>" },
+    { sk: "Vyprázdnite chladničku, prosím.", en: "Please empty the fridge." },
+    { sk: "Nezabudnite si svoje osobné veci (nabíjačky…).", en: "Don't forget your personal belongings (chargers…)." },
+    { sk: "Zhasnite svetlá.", en: "Turn off the lights." },
+    { sk: "Uistite sa prosím, že sú zatvorené okná <em>(2× spálňa, 1× obývačka, 1× kuchyňa)</em>.", en: "Please make sure the windows are closed <em>(2× bedroom, 1× living room, 1× kitchen)</em>." },
+    { sk: "Zamknite dvere a kľúče vložte naspäť do boxu.", en: "Lock the door and put the keys back in the box." },
+    { sk: "Ak bolo niečo poškodené, dajte nám prosím vedieť, aby sme to mohli opraviť.", en: "If anything was damaged, please let us know so we can fix it." }
+  ];
+
   function getStored(key, fallback) {
     try { return localStorage.getItem(key) || fallback; }
     catch { return fallback; }
@@ -1443,14 +1565,18 @@
       copy: "KOPÍROVAŤ",
       copied: "SKOPÍROVANÉ",
       rulesTitle: "Domový poriadok",
-      rulesSub: "Niekoľko pravidiel pre príjemný pobyt",
-      ruleSmoking: "<strong>Zákaz fajčenia</strong> vo vnútri apartmánu. Na balkóne je vyhradený priestor.",
-      ruleQuiet: "<strong>Nočný pokoj</strong> od 22:00 do 8:00. Prosíme o ohľaduplnosť voči susedom.",
-      rulePets: "<strong>Bez domácich zvierat</strong>, pokiaľ nebolo vopred dohodnuté inak.",
-      ruleParties: "<strong>Zákaz osláv a podujatí.</strong> Iba registrovaní hostia.",
-      ruleShoes: "<strong>Vyzúvanie obuvi</strong> vo vnútri. Papuče nájdete pri vchode.",
-      ruleTrash: "<strong>Smeti</strong> patria do nádob na prízemí. Triedený odpad do modrých kontajnerov.",
-      ruleCheckout: "<strong>Odchod najneskôr o 11:00.</strong> Kľúče prosíme nechať v trezore.",
+      rulesSub: "Dôležité informácie pre Váš pobyt",
+      emergInfoTitle: "INFO V PRÍPADE NÚDZE",
+      emergLineLabel: "Tiesňová linka",
+      emergMedicalLabel: "Zdravotná pohotovosť",
+      emergPoliceLabel: "Polícia",
+      emergFireLabel: "Hasiči",
+      emergExtinguisherText: "Hasiaci prístroj je umiestnený pred vstupom do apartmánu — po pravej strane pod strechou.",
+      rulesListTitle: "PRAVIDLÁ APARTMÁNU",
+      checkoutTitle: "POKYNY K ODCHODU",
+      checkoutThanks: "Ďakujeme za Váš pobyt ♥ Prajeme Vám šťastnú cestu a radi Vás opäť privítame.",
+      ratingTitle: "HODNOTENIE",
+      ratingText: "Ak ste boli so svojím pobytom spokojní, úctivo Vás prosíme o pozitívne hodnotenie. Ďakujeme!",
       tipsTitle: "Tipy z okolia",
       tipsSub: "Najkrajšie miesta Banskej Štiavnice",
       navTransport: "Doprava",
@@ -1528,14 +1654,18 @@
       copy: "COPY",
       copied: "COPIED",
       rulesTitle: "House Rules",
-      rulesSub: "A few notes for a pleasant stay",
-      ruleSmoking: "<strong>No smoking</strong> inside the apartment. A designated area is available on the balcony.",
-      ruleQuiet: "<strong>Quiet hours</strong> from 10:00 PM to 8:00 AM. Please be considerate of neighbors.",
-      rulePets: "<strong>No pets allowed</strong>, unless previously arranged.",
-      ruleParties: "<strong>No parties or events.</strong> Registered guests only.",
-      ruleShoes: "<strong>Shoes off</strong> inside. Slippers are provided by the entrance.",
-      ruleTrash: "<strong>Trash</strong> goes in the bins on the ground floor. Recycling in blue containers.",
-      ruleCheckout: "<strong>Check-out by 11:00 AM.</strong> Please leave keys in the safe.",
+      rulesSub: "Important information for your stay",
+      emergInfoTitle: "EMERGENCY INFORMATION",
+      emergLineLabel: "Emergency line",
+      emergMedicalLabel: "Medical emergency",
+      emergPoliceLabel: "Police",
+      emergFireLabel: "Firemen",
+      emergExtinguisherText: "The fire extinguisher is located in front of the apartment entrance, on the right side under the roof.",
+      rulesListTitle: "APARTMENT RULES",
+      checkoutTitle: "CHECK-OUT",
+      checkoutThanks: "Thank you for your stay ♥ We wish you a safe journey and look forward to welcoming you again.",
+      ratingTitle: "RATING",
+      ratingText: "If you were satisfied with your stay, we respectfully ask for a positive rating. Thank you!",
       tipsTitle: "Local Tips",
       tipsSub: "The finest of Banská Štiavnica",
       navTransport: "Transport",
@@ -1621,6 +1751,8 @@
     if (typeof applyTipLang === "function") applyTipLang();
     if (typeof applyGalleryLang === "function") applyGalleryLang();
     if (typeof applyParkingLang === "function") applyParkingLang();
+    if (typeof applyRulesLang === "function") applyRulesLang();
+    if (typeof applyCheckoutLang === "function") applyCheckoutLang();
     try { localStorage.setItem("lang", lang); } catch {}
   }
 
@@ -1922,6 +2054,52 @@
   }
 
   renderParking();
+
+  // ==========================================================================
+  // Rules list + Checkout checklist (data-driven, bilingual)
+  // ==========================================================================
+  function renderRules() {
+    const list = document.getElementById("rulesList");
+    list.innerHTML = "";
+    RULES.forEach((r, i) => {
+      const li = document.createElement("li");
+      const icon = document.createElement("span");
+      icon.className = "icon";
+      icon.textContent = r.icon;
+      const text = document.createElement("span");
+      text.dataset.ruleField = String(i);
+      li.appendChild(icon);
+      li.appendChild(text);
+      list.appendChild(li);
+    });
+    applyRulesLang();
+  }
+  function applyRulesLang() {
+    document.querySelectorAll("[data-rule-field]").forEach(el => {
+      const r = RULES[+el.dataset.ruleField];
+      if (r && r[currentLang] != null) el.innerHTML = r[currentLang];
+    });
+  }
+
+  function renderCheckout() {
+    const list = document.getElementById("checkoutList");
+    list.innerHTML = "";
+    CHECKOUT.forEach((c, i) => {
+      const li = document.createElement("li");
+      li.dataset.checkoutField = String(i);
+      list.appendChild(li);
+    });
+    applyCheckoutLang();
+  }
+  function applyCheckoutLang() {
+    document.querySelectorAll("[data-checkout-field]").forEach(el => {
+      const c = CHECKOUT[+el.dataset.checkoutField];
+      if (c && c[currentLang] != null) el.innerHTML = c[currentLang];
+    });
+  }
+
+  renderRules();
+  renderCheckout();
 
   langSwitches.forEach(ls => {
     ls.addEventListener("click", (e) => {

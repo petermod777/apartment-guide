@@ -29,6 +29,9 @@ Where to change things in `index.html`. Use **Ctrl+F** to find the exact strings
 | All 9 local tips | `const TIPS = [` | JS array (single source) |
 | Apartment photo gallery | `const GALLERY = [` | JS array (single source) |
 | Recommended parking spots | `const PARKING = [` | JS array (single source) |
+| House rules list | `const RULES = [` | JS array (single source) |
+| Check-out checklist | `const CHECKOUT = [` | JS array (single source) |
+| Emergency numbers | Search for `emergencyTitle` | HTML + i18n |
 | Logo image | File: `logo.png` | Image file |
 | Tip images | Folder: `tips/` | Image files |
 | Gallery photos | Folder: `gallery/` | Image files |
