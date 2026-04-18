@@ -27,8 +27,10 @@ Where to change things in `index.html`. Use **Ctrl+F** to find the exact strings
 | Welcome message (home) | `heroDesc` | i18n dictionaries |
 | Key box hint text | `homeKeyboxHint` | i18n dictionaries |
 | All 9 local tips | `const TIPS = [` | JS array (single source) |
+| Apartment photo gallery | `const GALLERY = [` | JS array (single source) |
 | Logo image | File: `logo.png` | Image file |
 | Tip images | Folder: `tips/` | Image files |
+| Gallery photos | Folder: `gallery/` | Image files |
 
 ---
 
@@ -121,6 +123,23 @@ Current filenames expected:
 - `tips/sitno.jpg`
 
 Recommended: 16:10 landscape, ~1200×750 px, JPG, 150–400 KB each.
+
+### Gallery (apartment photos)
+Folder: `gallery/`
+Naming must match the `img:` field of each item in the `GALLERY` array.
+
+Default filenames expected (can be renamed in the array):
+- `gallery/01.jpg` — Obývacia izba / Living room
+- `gallery/02.jpg` — Spálňa / Bedroom
+- `gallery/03.jpg` — Kúpeľňa / Bathroom
+- `gallery/04.jpg` — Kuchyňa / Kitchen
+- `gallery/05.jpg` — Jedálenský kút / Dining area
+- `gallery/06.jpg` — Vstupná brána / Entrance gate
+
+Recommended: square or close (1:1), ~1200×1200 px, JPG, 200–500 KB.
+Display: thumbnail grid → tap to open full-screen lightbox with swipe / arrow / keyboard navigation. Missing images are silently hidden.
+
+**To add/remove/reorder photos:** edit the `GALLERY` array in `index.html`. Same pattern as `TIPS`.
 
 ---
 

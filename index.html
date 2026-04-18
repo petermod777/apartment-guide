@@ -794,6 +794,119 @@
     margin-top: 8px;
     font-style: italic;
   }
+
+  /* Gallery grid */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 480px) {
+    .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  }
+  .gallery-item {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid var(--border-soft);
+    cursor: pointer;
+    position: relative;
+    background: var(--surface);
+    transition: border-color 0.2s, transform 0.15s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .gallery-item:active { border-color: var(--gold); transform: scale(0.98); }
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .gallery-empty {
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+
+  /* Lightbox */
+  #lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 150;
+    padding: 60px 10px 80px;
+    animation: bgfade 0.2s ease;
+  }
+  #lightbox.show { display: flex; }
+  .lightbox-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    border-radius: 2px;
+  }
+  .lightbox-caption {
+    position: absolute;
+    bottom: calc(env(safe-area-inset-bottom) + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--cream);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: center;
+    font-style: italic;
+    max-width: calc(100% - 40px);
+  }
+  .lightbox-caption:empty { display: none; }
+  .lightbox-counter {
+    position: absolute;
+    top: calc(env(safe-area-inset-top) + 20px);
+    left: 20px;
+    color: var(--cream-dim);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    font-family: "Georgia", serif;
+  }
+  .lightbox-btn {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(201, 168, 118, 0.5);
+    color: var(--cream);
+    cursor: pointer;
+    font-family: "Georgia", serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  .lightbox-btn:active { background: rgba(201, 168, 118, 0.2); color: var(--gold-bright); }
+  .lightbox-close {
+    top: calc(env(safe-area-inset-top) + 14px);
+    right: 14px;
+    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    line-height: 1;
+  }
+  .lightbox-prev, .lightbox-next {
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    line-height: 38px;
+    padding: 0;
+  }
+  .lightbox-prev { left: 8px; }
+  .lightbox-next { right: 8px; }
 </style>
 </head>
 <body>
@@ -837,6 +950,15 @@
         <p class="muted keybox-hint" data-i18n="homeKeyboxHint">Krabička na kľúče sa nachádza na vstupnej kovovej bránke a je označená jašteričkou 🦎</p>
       </div>
 
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+      <h2 class="section-title" data-i18n="galleryTitle">Fotogaléria</h2>
+      <p class="section-sub" data-i18n="gallerySub">Pozrite si náš apartmán</p>
+      <div class="ornament">❦</div>
+      <div id="galleryGrid" class="gallery-grid"></div>
+      <p id="galleryEmpty" class="gallery-empty" hidden data-i18n="galleryEmpty">Fotografie budú čoskoro doplnené.</p>
     </section>
 
     <!-- WIFI (protected) -->
@@ -972,6 +1094,7 @@
     </div>
     <nav class="drawer-nav" id="nav">
       <button data-target="home" class="active"><span class="icon">🏛️</span><span class="label" data-i18n="navHome">Domov</span></button>
+      <button data-target="gallery"><span class="icon">🖼️</span><span class="label" data-i18n="navGallery">Galéria</span></button>
       <button data-target="tips"><span class="icon">🗺️</span><span class="label" data-i18n="navTips">Tipy</span></button>
       <button data-target="transport"><span class="icon">🚗</span><span class="label" data-i18n="navTransport">Doprava</span></button>
       <button data-target="wifi"><span class="icon">📶</span><span class="label" data-i18n="navWifi">WiFi</span></button>
@@ -998,6 +1121,16 @@
     <div class="error-msg" id="lockError"></div>
     <button class="lock-submit" id="lockSubmit" data-i18n="lockSubmit">Odomknúť</button>
   </div>
+</div>
+
+<!-- Lightbox for gallery -->
+<div id="lightbox" aria-hidden="true">
+  <button class="lightbox-btn lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <button class="lightbox-btn lightbox-prev" id="lightboxPrev" aria-label="Previous">‹</button>
+  <button class="lightbox-btn lightbox-next" id="lightboxNext" aria-label="Next">›</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+  <img class="lightbox-img" id="lightboxImg" alt="" />
+  <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
 
 <!-- Hidden admin panel: long-press the logo to open -->
@@ -1173,6 +1306,20 @@
     }
   ];
 
+  // ==========================================================================
+  // GALLERY — photos of the apartment. Drop files into /gallery/ folder.
+  // Each item: img (path), caption (optional, per language).
+  // Remove / add / reorder freely. Missing images are silently hidden.
+  // ==========================================================================
+  const GALLERY = [
+    { img: "gallery/01.jpg", caption: { sk: "Obývacia izba", en: "Living room" } },
+    { img: "gallery/02.jpg", caption: { sk: "Spálňa", en: "Bedroom" } },
+    { img: "gallery/03.jpg", caption: { sk: "Kúpeľňa", en: "Bathroom" } },
+    { img: "gallery/04.jpg", caption: { sk: "Kuchyňa", en: "Kitchen" } },
+    { img: "gallery/05.jpg", caption: { sk: "Jedálenský kút", en: "Dining area" } },
+    { img: "gallery/06.jpg", caption: { sk: "Vstupná brána", en: "Entrance gate" } }
+  ];
+
   function getStored(key, fallback) {
     try { return localStorage.getItem(key) || fallback; }
     catch { return fallback; }
@@ -1250,10 +1397,14 @@
       emergencyTitle: "NÚDZOVÁ SITUÁCIA",
       emergencyText: "V prípade núdze volajte <strong>112</strong>. Pri problémoch s apartmánom mimo pracovných hodín nás kontaktujte na čísle vyššie.",
       navHome: "Domov",
+      navGallery: "Galéria",
       navWifi: "WiFi",
       navRules: "Pravidlá",
       navTips: "Tipy",
       navContact: "Kontakt",
+      galleryTitle: "Fotogaléria",
+      gallerySub: "Pozrite si náš apartmán",
+      galleryEmpty: "Fotografie budú čoskoro doplnené.",
       lockTitle: "Zadajte PIN",
       lockDesc: "Tento apartmán je chránený PIN kódom, ktorý ste dostali pri ubytovaní.",
       lockSubmit: "Odomknúť",
@@ -1330,10 +1481,14 @@
       emergencyTitle: "EMERGENCY",
       emergencyText: "In case of emergency, dial <strong>112</strong>. For apartment issues after hours, reach us at the number above.",
       navHome: "Home",
+      navGallery: "Gallery",
       navWifi: "WiFi",
       navRules: "Rules",
       navTips: "Tips",
       navContact: "Contact",
+      galleryTitle: "Photo Gallery",
+      gallerySub: "Take a look at our apartment",
+      galleryEmpty: "Photos will be added soon.",
       lockTitle: "Enter PIN",
       lockDesc: "This apartment is protected with the PIN code you received at check-in.",
       lockSubmit: "Unlock",
@@ -1380,6 +1535,7 @@
       });
     });
     if (typeof applyTipLang === "function") applyTipLang();
+    if (typeof applyGalleryLang === "function") applyGalleryLang();
     try { localStorage.setItem("lang", lang); } catch {}
   }
 
@@ -1511,6 +1667,125 @@
   }
 
   renderTips();
+
+  // ==========================================================================
+  // Gallery: grid of thumbnails + lightbox viewer
+  // ==========================================================================
+  const galleryGrid = document.getElementById("galleryGrid");
+  const galleryEmpty = document.getElementById("galleryEmpty");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const lightboxCaption = document.getElementById("lightboxCaption");
+  const lightboxCounter = document.getElementById("lightboxCounter");
+  const lightboxClose = document.getElementById("lightboxClose");
+  const lightboxPrev = document.getElementById("lightboxPrev");
+  const lightboxNext = document.getElementById("lightboxNext");
+
+  // Track which gallery items have valid (loadable) images — only those become navigable
+  const validGalleryIdx = [];
+  let lightboxPos = 0; // index into validGalleryIdx
+
+  function renderGallery() {
+    galleryGrid.innerHTML = "";
+    validGalleryIdx.length = 0;
+
+    GALLERY.forEach((item, i) => {
+      const cell = document.createElement("div");
+      cell.className = "gallery-item";
+      cell.dataset.galleryIdx = String(i);
+
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.src = item.img;
+      img.addEventListener("error", () => {
+        cell.style.display = "none";
+        updateEmptyState();
+      });
+      img.addEventListener("load", () => {
+        if (!validGalleryIdx.includes(i)) {
+          validGalleryIdx.push(i);
+          validGalleryIdx.sort((a, b) => a - b);
+        }
+      });
+
+      cell.appendChild(img);
+      cell.addEventListener("click", () => openLightbox(i));
+      galleryGrid.appendChild(cell);
+    });
+
+    updateEmptyState();
+  }
+
+  function updateEmptyState() {
+    const anyVisible = Array.from(galleryGrid.children).some(c => c.style.display !== "none");
+    galleryEmpty.hidden = anyVisible;
+  }
+
+  function applyGalleryLang() {
+    // Captions update on-the-fly if the lightbox is open
+    if (lightbox.classList.contains("show")) {
+      const idx = validGalleryIdx[lightboxPos];
+      const item = GALLERY[idx];
+      lightboxCaption.textContent = (item && item.caption && item.caption[currentLang]) || "";
+    }
+  }
+
+  function openLightbox(idx) {
+    // Find the position of this idx in the valid list (or fall back to 0)
+    const pos = validGalleryIdx.indexOf(idx);
+    lightboxPos = pos >= 0 ? pos : 0;
+    if (validGalleryIdx.length === 0) return;
+    showLightboxAt(lightboxPos);
+    lightbox.classList.add("show");
+  }
+  function closeLightbox() {
+    lightbox.classList.remove("show");
+    lightboxImg.src = "";
+  }
+  function showLightboxAt(pos) {
+    const count = validGalleryIdx.length;
+    if (count === 0) return;
+    lightboxPos = (pos + count) % count;
+    const idx = validGalleryIdx[lightboxPos];
+    const item = GALLERY[idx];
+    lightboxImg.src = item.img;
+    lightboxCaption.textContent = (item.caption && item.caption[currentLang]) || "";
+    lightboxCounter.textContent = `${lightboxPos + 1} / ${count}`;
+    // Hide prev/next if only one photo
+    lightboxPrev.style.display = count > 1 ? "" : "none";
+    lightboxNext.style.display = count > 1 ? "" : "none";
+  }
+  function lightboxPrevFn() { showLightboxAt(lightboxPos - 1); }
+  function lightboxNextFn() { showLightboxAt(lightboxPos + 1); }
+
+  lightboxClose.addEventListener("click", closeLightbox);
+  lightboxPrev.addEventListener("click", (e) => { e.stopPropagation(); lightboxPrevFn(); });
+  lightboxNext.addEventListener("click", (e) => { e.stopPropagation(); lightboxNextFn(); });
+  lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener("keydown", (e) => {
+    if (!lightbox.classList.contains("show")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") lightboxPrevFn();
+    if (e.key === "ArrowRight") lightboxNextFn();
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  let touchStartY = 0;
+  lightbox.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  lightbox.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) lightboxPrevFn(); else lightboxNextFn();
+    }
+  }, { passive: true });
+
+  renderGallery();
 
   langSwitches.forEach(ls => {
     ls.addEventListener("click", (e) => {
