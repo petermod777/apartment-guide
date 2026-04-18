@@ -128,18 +128,20 @@ Recommended: 16:10 landscape, ~1200×750 px, JPG, 150–400 KB each.
 Folder: `gallery/`
 Naming must match the `img:` field of each item in the `GALLERY` array.
 
-Default filenames expected (can be renamed in the array):
-- `gallery/01.jpg` — Obývacia izba / Living room
-- `gallery/02.jpg` — Spálňa / Bedroom
-- `gallery/03.jpg` — Kúpeľňa / Bathroom
-- `gallery/04.jpg` — Kuchyňa / Kitchen
-- `gallery/05.jpg` — Jedálenský kút / Dining area
-- `gallery/06.jpg` — Vstupná brána / Entrance gate
+**Default numbered slots** (currently 15 entries pre-declared):
+```
+gallery/01.jpg, gallery/02.jpg, ..., gallery/15.jpg
+```
 
-Recommended: square or close (1:1), ~1200×1200 px, JPG, 200–500 KB.
-Display: thumbnail grid → tap to open full-screen lightbox with swipe / arrow / keyboard navigation. Missing images are silently hidden.
+You don't need all 15 — just drop in as many photos as you have (e.g. only `01.jpg` through `08.jpg`). Missing files are silently hidden, so unused slots don't break anything.
 
-**To add/remove/reorder photos:** edit the `GALLERY` array in `index.html`. Same pattern as `TIPS`.
+**Want more than 15?** Open `index.html`, find `const GALLERY = [`, and add more `{ img: "gallery/16.jpg" },` entries.
+
+**Recommended image specs:** square or close (1:1), ~1200×1200 px, JPG, 200–500 KB.
+
+**Display:** thumbnail grid (2 cols on phones, 3 on wider screens) → tap to open full-screen lightbox with swipe / arrow / keyboard navigation.
+
+**Optional captions:** add `caption: { sk: "...", en: "..." }` to any item if you want a label to appear beneath the image in the lightbox. Currently disabled — photos only.
 
 ---
 
